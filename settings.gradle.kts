@@ -131,3 +131,4 @@ include(
 include(
     ":library:html-cleaner",
 )
+include(":backend:ddd")

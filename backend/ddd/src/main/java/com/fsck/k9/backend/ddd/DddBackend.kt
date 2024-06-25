@@ -1,30 +1,35 @@
-package com.fsck.k9.backend.pop3
+package com.fsck.k9.backend.ddd
 
+import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
 import com.fsck.k9.backend.api.Backend
 import com.fsck.k9.backend.api.BackendPusher
 import com.fsck.k9.backend.api.BackendPusherCallback
 import com.fsck.k9.backend.api.BackendStorage
 import com.fsck.k9.backend.api.SyncConfig
 import com.fsck.k9.backend.api.SyncListener
+//import com.fsck.k9.backend.pop3.CommandRefreshFolderList
 import com.fsck.k9.mail.BodyFactory
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mail.Part
-import com.fsck.k9.mail.store.pop3.Pop3Store
-import com.fsck.k9.mail.transport.smtp.SmtpTransport
+import java.io.ByteArrayOutputStream
+import java.io.ObjectOutputStream
 
 
-class Pop3Backend(
+class DddBackend(
+    context: Context,
     accountName: String,
     backendStorage: BackendStorage,
-    private val pop3Store: Pop3Store,
-    private val smtpTransport: SmtpTransport,
 ) : Backend {
-    private val pop3Sync: Pop3Sync = Pop3Sync(accountName, backendStorage, pop3Store)
-    private val commandRefreshFolderList = CommandRefreshFolderList(backendStorage)
-    private val commandSetFlag = CommandSetFlag(pop3Store)
-    private val commandDownloadMessage = CommandDownloadMessage(backendStorage, pop3Store)
+//    private val commandRefreshFolderList = CommandRefreshFolderList(backendStorage)
+    private val RESOLVER_COLUMNS = arrayOf("data")
+    private val context = context
 
+    companion object {
+        val CONTENT_URL: Uri = Uri.parse("content://com.ddd.provider.datastoreprovider/mails")
+    }
     override val supportsFlags = false
     override val supportsExpunge = false
     override val supportsMove = false
@@ -36,11 +41,11 @@ class Pop3Backend(
     override val isPushCapable = false
 
     override fun refreshFolderList() {
-        commandRefreshFolderList.refreshFolderList()
+//        commandRefreshFolderList.refreshFolderList()
     }
 
     override fun sync(folderServerId: String, syncConfig: SyncConfig, listener: SyncListener) {
-        pop3Sync.sync(folderServerId, syncConfig, listener)
+//        pop3Sync.sync(folderServerId, syncConfig, listener)
     }
 
     override fun downloadMessage(syncConfig: SyncConfig, folderServerId: String, messageServerId: String) {
@@ -52,11 +57,11 @@ class Pop3Backend(
     }
 
     override fun downloadCompleteMessage(folderServerId: String, messageServerId: String) {
-        commandDownloadMessage.downloadCompleteMessage(folderServerId, messageServerId)
+//        commandDownloadMessage.downloadCompleteMessage(folderServerId, messageServerId)
     }
 
     override fun setFlag(folderServerId: String, messageServerIds: List<String>, flag: Flag, newState: Boolean) {
-        commandSetFlag.setFlag(folderServerId, messageServerIds, flag, newState)
+//        commandSetFlag.setFlag(folderServerId, messageServerIds, flag, newState)
     }
 
     override fun markAllAsRead(folderServerId: String) {
@@ -68,7 +73,7 @@ class Pop3Backend(
     }
 
     override fun deleteMessages(folderServerId: String, messageServerIds: List<String>) {
-        commandSetFlag.setFlag(folderServerId, messageServerIds, Flag.DELETED, true)
+//        commandSetFlag.setFlag(folderServerId, messageServerIds, Flag.DELETED, true)
     }
 
     override fun deleteAllMessages(folderServerId: String) {
@@ -122,7 +127,30 @@ class Pop3Backend(
     }
 
     override fun sendMessage(message: Message) {
-        smtpTransport.sendMessage(message)
+//        smtpTransport.sendMessage(message)
+        if (message.size > 0) {
+            return
+        }
+        val sampleString: String = "This is a sample string"
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        ObjectOutputStream(byteArrayOutputStream).use { it.writeObject(sampleString) }
+
+        val values = ContentValues().apply {
+            put(RESOLVER_COLUMNS[0], byteArrayOutputStream.toByteArray())
+        }
+
+        try {
+            val resolver = context.contentResolver
+            val uri = resolver.insert(CONTENT_URL, values)
+            if (uri == null) {
+                throw Exception("Message not inserted")
+            }
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     override fun createPusher(callback: BackendPusherCallback): BackendPusher {
