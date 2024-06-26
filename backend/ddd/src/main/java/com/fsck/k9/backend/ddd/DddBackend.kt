@@ -131,9 +131,8 @@ class DddBackend(
         if (message.size > 0) {
             return
         }
-        val sampleString: String = "This is a sample string"
         val byteArrayOutputStream = ByteArrayOutputStream()
-        ObjectOutputStream(byteArrayOutputStream).use { it.writeObject(sampleString) }
+        message.writeTo(byteArrayOutputStream)
 
         val values = ContentValues().apply {
             put(RESOLVER_COLUMNS[0], byteArrayOutputStream.toByteArray())
