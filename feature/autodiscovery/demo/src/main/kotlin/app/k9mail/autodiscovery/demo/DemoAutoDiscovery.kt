@@ -59,7 +59,7 @@ object DDDServerSettings : IncomingServerSettings, OutgoingServerSettings {
         host = "irrelevant",
         port = 23,
         connectionSecurity = ConnectionSecurity.SSL_TLS_REQUIRED,
-        authenticationType = AuthType.AUTOMATIC,
+        authenticationType = AuthType.PLAIN,
         username = "TestUser",
         password = "TestPwd",
         clientCertificateAlias = null,
