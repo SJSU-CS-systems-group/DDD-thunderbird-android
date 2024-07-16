@@ -1,15 +1,14 @@
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 }
 //
 android {
-    namespace = "com.ddd.k9"
+    namespace = "net.discdd.k9"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.ddd.k9"
+        applicationId = "net.discdd.k9"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

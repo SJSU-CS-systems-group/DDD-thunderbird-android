@@ -28,7 +28,7 @@ class DddBackend(
     private val context = context
 
     companion object {
-        val CONTENT_URL: Uri = Uri.parse("content://com.ddd.provider.datastoreprovider/mails")
+        val CONTENT_URL: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/mails")
     }
     override val supportsFlags = false
     override val supportsExpunge = false
