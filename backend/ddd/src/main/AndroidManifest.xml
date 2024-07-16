@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
     <uses-permission
-        android:name="com.ddd.bundleclient.permission.MESSAGE_PROVIDER_READ"
+        android:name="net.discdd.bundleclient.permission.MESSAGE_PROVIDER_READ"
         android:protectionLevel="normal" />
     <uses-permission
-        android:name="com.ddd.bundleclient.permission.MESSAGE_PROVIDER_WRITE"
+        android:name="net.discdd.bundleclient.permission.MESSAGE_PROVIDER_WRITE"
         android:protectionLevel="normal" />
 
 
     <queries>
-        <provider android:authorities="com.ddd.provider.datastoreprovider" />
+        <provider android:authorities="net.discdd.provider.datastoreprovider" />
     </queries>
     <application
         android:allowBackup="true"

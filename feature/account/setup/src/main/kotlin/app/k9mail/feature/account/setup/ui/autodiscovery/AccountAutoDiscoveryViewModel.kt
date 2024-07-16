@@ -69,7 +69,7 @@ internal class AccountAutoDiscoveryViewModel(
         var clientID = ""
         var email = ""
         val cursor = context?.contentResolver?.query(
-            Uri.parse("content://com.ddd.provider.datastoreprovider/mails"),
+            Uri.parse("content://net.discdd.provider.datastoreprovider/mails"),
             arrayOf("data"),
             null,
             arrayOf("clientId"),
