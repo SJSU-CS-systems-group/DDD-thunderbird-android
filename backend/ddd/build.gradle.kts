@@ -33,8 +33,6 @@ dependencies {
 
     api(projects.backend.api)
     api(projects.mail.common)
-    api(projects.mail.protocols.pop3)
-    api(projects.mail.protocols.smtp)
 
     testImplementation(projects.mail.testing)
 }

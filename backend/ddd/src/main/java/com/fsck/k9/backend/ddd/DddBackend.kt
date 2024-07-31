@@ -103,8 +103,10 @@ class DddBackend(
             val aduIds = mutableListOf<String>()
             if (cursor.moveToFirst()) {
                 val idsString = cursor.getString(cursor.getColumnIndexOrThrow(RESOLVER_COLUMNS[0]))
-                val ids = idsString.split(",")
-                aduIds.addAll(ids)
+                if (idsString.isNotEmpty()) {
+                    val ids = idsString.split(",")
+                    aduIds.addAll(ids)
+                }
             }
 
             cursor.close()

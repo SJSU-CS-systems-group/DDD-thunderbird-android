@@ -13,7 +13,6 @@ import com.fsck.k9.mail.Part
 import com.fsck.k9.mail.store.pop3.Pop3Store
 import com.fsck.k9.mail.transport.smtp.SmtpTransport
 
-
 class Pop3Backend(
     accountName: String,
     backendStorage: BackendStorage,
