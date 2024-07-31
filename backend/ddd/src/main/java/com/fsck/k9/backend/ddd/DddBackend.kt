@@ -80,33 +80,31 @@ class DddBackend(
             emptyMap()
         }
 
-        val aduIdList = getAllPendingMailIds()
-        val inboxFolderData = FolderData(
-            name = "inbox",
-            type = FolderType.INBOX,
-            messageServerIds = aduIdList
-        )
+//        val aduIdList = getAllPendingMailIds()
+//        val inboxFolderData = FolderData(
+//            name = "inbox",
+//            type = FolderType.INBOX,
+//            messageServerIds = aduIdList
+//        )
 
         val combinedFolders = initialFolders.toMutableMap()
-        combinedFolders["inbox"] = inboxFolderData
+//        combinedFolders["inbox"] = inboxFolderData
 
         return combinedFolders
     }
 
-    private fun getAllPendingMailIds(): List<String> {
+    private fun getAllPendingMailIds(): List<Long> {
         try {
             val resolver = context.contentResolver
             val cursor = resolver.query(CONTENT_URL, RESOLVER_COLUMNS, "aduIds", null, null)
 
             cursor ?: throw NullPointerException("Cursor is null")
-
-            val aduIds = mutableListOf<String>()
+            val aduIds = mutableListOf<Long>()
             if (cursor.moveToFirst()) {
-                val idsString = cursor.getString(cursor.getColumnIndexOrThrow(RESOLVER_COLUMNS[0]))
-                if (idsString.isNotEmpty()) {
-                    val ids = idsString.split(",")
-                    aduIds.addAll(ids)
-                }
+                do {
+                    val aduId = cursor.getLong(cursor.getColumnIndexOrThrow(RESOLVER_COLUMNS[0]))
+                    aduIds.add(aduId)
+                } while (cursor.moveToNext())
             }
 
             cursor.close()
@@ -150,7 +148,6 @@ class DddBackend(
 
     override fun sync(folderServerId: String, syncConfig: SyncConfig, listener: SyncListener) {
         listener.syncStarted(folderServerId)
-
         val folderData = messageStoreInfo["inbox"]
         if (folderData == null) {
             listener.syncFailed(folderServerId, "Folder $folderServerId doesn't exist", null)
@@ -160,15 +157,23 @@ class DddBackend(
         val backendFolder = backendStorage.getFolder(folderServerId)
 
         try {
-            readMessageStoreInfo()
-            for (messageServerId in folderData.messageServerIds) {
-                val message = loadMessage(folderServerId, messageServerId)
+            //TO-DO:
+            // we might need to delete mails one at a time, after calling the saveMessage.
+            // This implementation might process the same message multiple times
+            val mailIdsToSync = getAllPendingMailIds()
+            var lastMsgServerIdProcessed = 0L;
+            for (messageServerId in mailIdsToSync) {
+                val message = loadMessage(folderServerId, messageServerId.toString())
                 backendFolder.saveMessage(message, MessageDownloadState.FULL)
-                listener.syncNewMessage(folderServerId, messageServerId, isOldMessage = false)
+                listener.syncNewMessage(folderServerId, messageServerId.toString(), isOldMessage = false)
+                val msId = messageServerId
+                if (lastMsgServerIdProcessed < msId) {
+                    lastMsgServerIdProcessed = msId;
+                }
             }
 
+            context.contentResolver.delete(CONTENT_URL, "deleteAllADUsUpto", arrayOf(lastMsgServerIdProcessed.toString()))
             backendFolder.setMoreMessages(BackendFolder.MoreMessages.FALSE)
-
             listener.syncFinished(folderServerId)
         } catch (e: Exception) {
             e.printStackTrace()
