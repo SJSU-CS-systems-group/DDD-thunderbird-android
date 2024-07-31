@@ -71,8 +71,8 @@ internal class AccountAutoDiscoveryViewModel(
         val cursor = context?.contentResolver?.query(
             Uri.parse("content://net.discdd.provider.datastoreprovider/mails"),
             arrayOf("data"),
+            "clientId",
             null,
-            arrayOf("clientId"),
             null
         )
 
