@@ -14,7 +14,6 @@ import com.fsck.k9.backend.api.SyncListener
 import com.fsck.k9.backend.api.updateFolders
 import com.fsck.k9.mail.BodyFactory
 import com.fsck.k9.mail.Flag
-import com.fsck.k9.mail.FolderType
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mail.MessageDownloadState
 import com.fsck.k9.mail.Part
