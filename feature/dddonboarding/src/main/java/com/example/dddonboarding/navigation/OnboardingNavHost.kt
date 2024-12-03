@@ -10,6 +10,7 @@ import com.example.dddonboarding.ui.login.LoginScreen
 import com.example.dddonboarding.ui.login.LoginViewModel
 import com.example.dddonboarding.ui.login.RegisterScreen
 import com.example.dddonboarding.ui.pending.PendingScreen
+import com.example.dddonboarding.ui.register.RegisterViewModel
 import org.koin.androidx.compose.koinViewModel
 
 private const val NESTED_NAVIGATION_ROUTE_REGISTER = "register"
@@ -48,7 +49,10 @@ fun OnboardingNavHost(
         }
         composable(route = NESTED_NAVIGATION_ROUTE_REGISTER){
             RegisterScreen(
-                onLoginClick = { navController.navigateToLogin() }
+                onRegisterClick = { navController.navigateToLogin() },
+                viewModel =  koinViewModel<RegisterViewModel>(),
+                onPendingState = { navController.navigateToPending() },
+                onFinish = { onFinish }
             )
         }
         composable(route = NESTED_NAVIGATION_ROUTE_PENDING){

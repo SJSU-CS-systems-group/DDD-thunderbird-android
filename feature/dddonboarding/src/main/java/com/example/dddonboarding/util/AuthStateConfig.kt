@@ -32,6 +32,7 @@ class AuthStateConfig(
     }
 
     fun readState(): AuthState {
+        if (!configFile.exists()) return AuthState.LOGGED_OUT
         var state: String? = configFile.readLines().firstOrNull()
 
         when (state) {

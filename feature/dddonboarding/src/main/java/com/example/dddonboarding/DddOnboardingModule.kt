@@ -3,6 +3,7 @@ package com.example.dddonboarding
 import com.example.dddonboarding.repository.AuthRepositoryImpl
 import com.example.dddonboarding.repository.AuthRepository
 import com.example.dddonboarding.ui.login.LoginViewModel
+import com.example.dddonboarding.ui.register.RegisterViewModel
 import com.example.dddonboarding.util.AuthStateConfig
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -18,6 +19,12 @@ val featureDddOnboardingModule: Module = module {
 
     viewModel{
         LoginViewModel (
+            authRepository = get()
+        )
+    }
+
+    viewModel{
+        RegisterViewModel (
             authRepository = get()
         )
     }

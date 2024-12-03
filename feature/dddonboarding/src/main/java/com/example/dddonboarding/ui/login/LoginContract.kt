@@ -5,13 +5,11 @@ import app.k9mail.feature.account.common.domain.input.StringInputField
 import com.example.dddonboarding.repository.AuthRepository
 
 interface LoginContract {
-    interface ViewModel: UnidirectionalViewModel<State, Event, Effect> {}
+    //interface ViewModel: UnidirectionalViewModel<State, Event, Effect> {}
 
     data class State(
         val emailAddress: StringInputField = StringInputField(),
         val password: StringInputField = StringInputField(),
-        val state: AuthRepository.AuthState? = null,
-        val isLoading: Boolean = true
     )
 
     sealed interface Event {

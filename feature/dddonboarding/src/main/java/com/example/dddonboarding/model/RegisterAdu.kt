@@ -10,7 +10,7 @@ data class RegisterAdu(
     override val password: String
 ): Adu {
     override fun toByteArray(): ByteArray {
-        return "register\n$suffix1,$suffix2,$suffix3\n$prefix1,$prefix2,$prefix3\n$password".toByteArray()
+        return "register\n$prefix1,$prefix2,$prefix3\n$suffix1,$suffix2,$suffix3\n$password".toByteArray()
     }
 }
 
