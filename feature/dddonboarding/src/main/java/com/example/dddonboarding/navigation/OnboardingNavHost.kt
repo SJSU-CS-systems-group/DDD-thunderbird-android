@@ -1,15 +1,20 @@
 package com.example.dddonboarding.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import com.example.dddonboarding.ui.login.LoginScreen
+import com.example.dddonboarding.ui.login.LoginViewModel
 import com.example.dddonboarding.ui.login.RegisterScreen
+import com.example.dddonboarding.ui.pending.PendingScreen
+import org.koin.androidx.compose.koinViewModel
 
 private const val NESTED_NAVIGATION_ROUTE_REGISTER = "register"
 private const val NESTED_NAVIGATION_ROUTE_LOGIN = "login"
+private const val NESTED_NAVIGATION_ROUTE_PENDING = "pending"
 
 private fun NavController.navigateToRegister() {
     navigate(NESTED_NAVIGATION_ROUTE_REGISTER)
@@ -17,6 +22,11 @@ private fun NavController.navigateToRegister() {
 
 private fun NavController.navigateToLogin() {
     navigate(NESTED_NAVIGATION_ROUTE_LOGIN)
+}
+
+private fun NavController.navigateToPending() {
+    Log.d("DDDOnboarding", "navigating to pending")
+    navigate(NESTED_NAVIGATION_ROUTE_PENDING)
 }
 
 @Composable
@@ -30,13 +40,19 @@ fun OnboardingNavHost(
     ) {
         composable(route = NESTED_NAVIGATION_ROUTE_LOGIN){
             LoginScreen(
-                onRegisterClick = { navController.navigateToRegister() }
+                onRegisterClick = { navController.navigateToRegister() },
+                viewModel =  koinViewModel<LoginViewModel>(),
+                onPendingState = { navController.navigateToPending() },
+                onFinish = { onFinish }
             )
         }
         composable(route = NESTED_NAVIGATION_ROUTE_REGISTER){
             RegisterScreen(
                 onLoginClick = { navController.navigateToLogin() }
             )
+        }
+        composable(route = NESTED_NAVIGATION_ROUTE_PENDING){
+            PendingScreen()
         }
     }
 }
