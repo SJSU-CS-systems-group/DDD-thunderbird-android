@@ -9,4 +9,5 @@ interface AcknowledgementAdu {
     val email: String?
     val password: String?
     val success:Boolean
+    val message: String?
 }

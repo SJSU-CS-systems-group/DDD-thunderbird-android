@@ -43,6 +43,7 @@ class AuthRepositoryImpl(
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 var data = String(cursor.getBlob(cursor.getColumnIndexOrThrow("data")))
+                // delete adu if exists
                 if (data.startsWith("login-ack")){
                     return AcknowledgementLoginAdu.toAckLoginAdu(data)
                 } else if (data.startsWith("register-ack")) {

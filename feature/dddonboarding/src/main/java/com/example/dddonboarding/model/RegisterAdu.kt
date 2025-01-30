@@ -17,18 +17,19 @@ data class RegisterAdu(
 data class AcknowledgementRegisterAdu(
     override val email: String?,
     override val password: String?,
-    override val success: Boolean
+    override val success: Boolean,
+    override val message: String?
 ): AcknowledgementAdu {
     companion object {
         fun toAckRegisterAdu(data: String): AcknowledgementRegisterAdu? {
             val dataArr = data.split("\n")
-            if (dataArr.size >= 2 || dataArr[0] != "register-ack") return null
+            if (dataArr.size < 4 || dataArr[0] != "register-ack") return null
 
             if (dataArr[1] == "success") {
-                return AcknowledgementRegisterAdu(email = dataArr[2], password = dataArr[3], success = true)
+                return AcknowledgementRegisterAdu(email = dataArr[3], password = dataArr[4], success = true, message = null)
             }
 
-            return AcknowledgementRegisterAdu(email = null, password = null, success = false)
+            return AcknowledgementRegisterAdu(email = null, password = null, success = false, message = dataArr[2])
         }
     }
 }

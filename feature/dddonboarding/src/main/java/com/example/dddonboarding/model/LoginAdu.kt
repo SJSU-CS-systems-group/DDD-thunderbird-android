@@ -14,17 +14,18 @@ data class LoginAdu(
 data class AcknowledgementLoginAdu(
     override val email: String?,
     override val password: String?,
-    override val success: Boolean
+    override val success: Boolean,
+    override val message: String?
 ): AcknowledgementAdu {
     companion object {
         fun toAckLoginAdu(data: String): AcknowledgementLoginAdu? {
             val dataArr = data.split("\n")
-            if (dataArr.size >= 2 || dataArr[0] != "login-ack") return null;
+            if (dataArr.size < 4 || dataArr[0] != "login-ack") return null;
 
             if (dataArr[1] == "success") {
-                return AcknowledgementLoginAdu(email = dataArr[2], password = dataArr[3], success = true)
+                return AcknowledgementLoginAdu(email = dataArr[3], password = dataArr[4], success = true, message = null)
             }
-            return AcknowledgementLoginAdu(email = null, password = null, success = true)
+            return AcknowledgementLoginAdu(email = null, password = null, success = false, message = dataArr[2])
         }
     }
 }
