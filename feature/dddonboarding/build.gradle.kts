@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(projects.core.ui.compose.common)
     implementation(projects.core.ui.compose.designsystem)
+    implementation("androidx.compose.material:material:1.7.7")
     implementation(projects.core.common)
     implementation(projects.feature.account.common)
 }

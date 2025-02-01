@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Box
 import app.k9mail.core.ui.compose.designsystem.atom.Surface
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonFilledTonal
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonText
@@ -34,11 +38,15 @@ internal fun LoginContent(
                 header = {
                     TextDisplayMedium(
                         text = "Login Screen",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 50.dp),
+                        textAlign = TextAlign.Center
                     )
                 },
                 footer = {
                     LoginFooter(
-                        modifer = Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = MainTheme.spacings.quadruple),
                         onRegisterClick = onRegisterClick
@@ -53,7 +61,17 @@ internal fun LoginContent(
                     )
                 }
                 item {
-                    ButtonFilledTonal(text = "Login", onClick = {onEvent(Event.OnClickLogin(state.emailAddress.value, state.password.value))})
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        ButtonFilledTonal(
+                            text = "Login",
+                            onClick = {
+                                onEvent(Event.OnClickLogin(state.emailAddress.value, state.password.value))
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -63,9 +81,14 @@ internal fun LoginContent(
 @Composable
 private fun LoginFooter(
     onRegisterClick: () -> Unit,
-    modifer: Modifier = Modifier,
+    modifier: Modifier = Modifier,
 ) {
-    ButtonText(text = "Go register", onClick = onRegisterClick)
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        ButtonText(text = "Go register", onClick = onRegisterClick)
+    }
 }
 
 @Composable
