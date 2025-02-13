@@ -16,42 +16,47 @@ class AuthRepositoryImpl(
     private val context: Context
 ): AuthRepository {
     private val RESOLVER_COLUMNS = arrayOf("data")
-    override val CONTENT_URL: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/mails");
+    override val CONTENT_URL: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/messages");
 
     override fun getState(): Pair<AuthState, AcknowledgementAdu?> {
         var state = authStateConfig.readState()
         if (state == AuthState.PENDING) {
-            val ackAdu = getAckAdu()
+            val ackAdu = getAckAdu() ?: return Pair(AuthState.PENDING, null)
 
-            if (ackAdu == null) {
-                return Pair(AuthState.PENDING, null)
-            }
             if (ackAdu.success) {
                 setState(AuthState.LOGGED_IN)
                 return Pair(AuthState.LOGGED_IN, ackAdu)
             }
             authStateConfig.deleteState()
-            return Pair(AuthState.LOGGED_OUT, null)
+            return Pair(AuthState.LOGGED_OUT, ackAdu)
         }
 
         return Pair(state, null)
     }
 
     private fun getAckAdu(): AcknowledgementAdu? {
-        val cursor = context.contentResolver.query(CONTENT_URL, arrayOf("data"), "aduData", null, null)
-
+        val cursor = context.contentResolver.query(CONTENT_URL, null, null, null, null)
+        var ack: AcknowledgementAdu? = null;
+        var lastSeenAduId: String? = null;
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                var data = String(cursor.getBlob(cursor.getColumnIndexOrThrow("data")))
+                var data = cursor.getString(cursor.getColumnIndexOrThrow("data"))
+                var id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
+                lastSeenAduId = id
+                Log.d("k9", "adu id: $id")
                 // delete adu if exists
                 if (data.startsWith("login-ack")){
-                    return AcknowledgementLoginAdu.toAckLoginAdu(data)
+                    ack = AcknowledgementLoginAdu.toAckLoginAdu(data)
                 } else if (data.startsWith("register-ack")) {
-                    return AcknowledgementRegisterAdu.toAckRegisterAdu(data)
+                    ack = AcknowledgementRegisterAdu.toAckRegisterAdu(data)
                 }
-            } while (cursor.moveToNext())
+            } while (ack==null && cursor.moveToNext())
         }
-        return null;
+
+        if (lastSeenAduId!=null) {
+            context.contentResolver.delete(CONTENT_URL, "deleteAllADUsUpto", arrayOf(lastSeenAduId))
+        }
+        return ack;
     }
 
     override fun setState(state: AuthState){

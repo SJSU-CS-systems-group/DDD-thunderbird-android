@@ -2,6 +2,7 @@ package com.example.dddonboarding.ui.login
 
 import app.k9mail.core.ui.compose.common.mvi.UnidirectionalViewModel
 import app.k9mail.feature.account.common.domain.input.StringInputField
+import app.k9mail.feature.account.setup.domain.entity.AccountUuid
 import com.example.dddonboarding.repository.AuthRepository
 
 interface LoginContract {
@@ -22,6 +23,6 @@ interface LoginContract {
 
     sealed interface Effect {
         data object OnPendingState: Effect
-        data object OnLoggedInState: Effect
+        data class OnLoggedInState(val  accountUuid: AccountUuid): Effect
     }
 }
