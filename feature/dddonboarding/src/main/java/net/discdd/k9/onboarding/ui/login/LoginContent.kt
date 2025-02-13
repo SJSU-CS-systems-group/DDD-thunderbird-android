@@ -1,4 +1,4 @@
-package com.example.dddonboarding.ui.login
+package net.discdd.k9.onboarding.ui.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize

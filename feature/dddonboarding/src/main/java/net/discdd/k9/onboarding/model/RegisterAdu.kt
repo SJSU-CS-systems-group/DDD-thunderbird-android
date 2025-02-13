@@ -1,4 +1,4 @@
-package com.example.dddonboarding.model
+package net.discdd.k9.onboarding.model
 
 data class RegisterAdu(
     val prefix1: String,
@@ -8,7 +8,7 @@ data class RegisterAdu(
     val suffix2: String,
     val suffix3: String,
     override val password: String
-): Adu {
+): net.discdd.k9.onboarding.model.Adu {
     override fun toByteArray(): ByteArray {
         return "register\n$prefix1,$prefix2,$prefix3\n$suffix1,$suffix2,$suffix3\n$password".toByteArray()
     }
@@ -19,7 +19,7 @@ data class AcknowledgementRegisterAdu(
     override val password: String?,
     override val success: Boolean,
     override val message: String?
-): AcknowledgementAdu {
+): net.discdd.k9.onboarding.model.AcknowledgementAdu {
     companion object {
         fun toAckRegisterAdu(data: String): AcknowledgementRegisterAdu? {
             val dataArr = data.split("\n")

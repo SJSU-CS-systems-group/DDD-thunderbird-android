@@ -1,4 +1,4 @@
-package com.example.dddonboarding.ui.pending
+package net.discdd.k9.onboarding.ui.pending
 
 import android.util.Log
 import androidx.compose.runtime.Composable

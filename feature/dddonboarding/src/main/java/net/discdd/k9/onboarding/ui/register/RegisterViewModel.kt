@@ -1,4 +1,4 @@
-package com.example.dddonboarding.ui.register
+package net.discdd.k9.onboarding.ui.register
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

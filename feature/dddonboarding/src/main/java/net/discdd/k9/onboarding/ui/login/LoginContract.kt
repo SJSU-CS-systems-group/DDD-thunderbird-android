@@ -1,8 +1,7 @@
-package com.example.dddonboarding.ui.login
+package net.discdd.k9.onboarding.ui.login
 
-import app.k9mail.core.ui.compose.common.mvi.UnidirectionalViewModel
 import app.k9mail.feature.account.common.domain.input.StringInputField
-import com.example.dddonboarding.repository.AuthRepository
+import app.k9mail.feature.account.setup.domain.entity.AccountUuid
 
 interface LoginContract {
     //interface ViewModel: UnidirectionalViewModel<State, Event, Effect> {}
@@ -22,6 +21,6 @@ interface LoginContract {
 
     sealed interface Effect {
         data object OnPendingState: Effect
-        data object OnLoggedInState: Effect
+        data class OnLoggedInState(val  accountUuid: AccountUuid): Effect
     }
 }

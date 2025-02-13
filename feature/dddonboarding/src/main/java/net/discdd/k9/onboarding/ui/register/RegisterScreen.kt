@@ -10,10 +10,9 @@ import com.example.dddonboarding.ui.register.RegisterContract.Effect
 
 @Composable
 fun RegisterScreen(
-    onRegisterClick: () -> Unit,
+    onLoginClick: () -> Unit,
     viewModel: RegisterViewModel,
     onPendingState: () -> Unit,
-    onFinish: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
@@ -31,6 +30,6 @@ fun RegisterScreen(
         state = state.value,
         onEvent = { viewModel.event(it) },
         modifier = modifier,
-        onRegisterClick = onRegisterClick
+        onLoginClick = onLoginClick
     )
 }
