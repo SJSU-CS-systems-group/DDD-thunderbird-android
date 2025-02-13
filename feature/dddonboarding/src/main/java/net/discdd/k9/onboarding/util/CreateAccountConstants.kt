@@ -1,4 +1,4 @@
-package com.example.dddonboarding.util
+package net.discdd.k9.onboarding.util
 
 import app.k9mail.feature.account.common.domain.entity.AccountDisplayOptions
 import app.k9mail.feature.account.common.domain.entity.AccountSyncOptions

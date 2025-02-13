@@ -1,4 +1,4 @@
-package com.example.dddonboarding
+package net.discdd.k9.onboarding
 
 import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
 import com.example.dddonboarding.repository.AuthRepositoryImpl
@@ -9,7 +9,6 @@ import com.example.dddonboarding.util.AuthStateConfig
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import org.koin.core.qualifier.named
 
 val featureDddOnboardingModule: Module = module {
     single<AuthStateConfig> { AuthStateConfig(get()) }

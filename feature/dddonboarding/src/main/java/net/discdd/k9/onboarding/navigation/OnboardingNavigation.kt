@@ -1,4 +1,4 @@
-package com.example.dddonboarding.navigation
+package net.discdd.k9.onboarding.navigation
 
 import androidx.navigation.NavGraphBuilder
 import app.k9mail.core.ui.compose.common.navigation.deepLinkComposable

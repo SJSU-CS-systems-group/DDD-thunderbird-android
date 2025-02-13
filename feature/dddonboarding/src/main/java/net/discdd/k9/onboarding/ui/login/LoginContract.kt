@@ -1,9 +1,7 @@
-package com.example.dddonboarding.ui.login
+package net.discdd.k9.onboarding.ui.login
 
-import app.k9mail.core.ui.compose.common.mvi.UnidirectionalViewModel
 import app.k9mail.feature.account.common.domain.input.StringInputField
 import app.k9mail.feature.account.setup.domain.entity.AccountUuid
-import com.example.dddonboarding.repository.AuthRepository
 
 interface LoginContract {
     //interface ViewModel: UnidirectionalViewModel<State, Event, Effect> {}

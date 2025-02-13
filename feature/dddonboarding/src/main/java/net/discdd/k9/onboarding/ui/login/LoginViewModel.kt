@@ -1,37 +1,19 @@
-package com.example.dddonboarding.ui.login
+package net.discdd.k9.onboarding.ui.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.k9mail.core.ui.compose.common.mvi.BaseViewModel
-import app.k9mail.feature.account.common.domain.entity.AccountDisplayOptions
 import app.k9mail.feature.account.common.domain.entity.AccountState
-import app.k9mail.feature.account.common.domain.entity.AccountSyncOptions
-import app.k9mail.feature.account.common.domain.entity.SpecialFolderOption
-import app.k9mail.feature.account.common.domain.entity.SpecialFolderSettings
-import app.k9mail.feature.account.common.ui.WizardConstants
 import app.k9mail.feature.account.setup.AccountSetupExternalContract.AccountCreator.AccountCreatorResult
 import app.k9mail.feature.account.setup.domain.entity.AccountUuid
 import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
-import app.k9mail.feature.account.setup.ui.createaccount.CreateAccountContract
-import com.example.dddonboarding.model.AcknowledgementAdu
-import com.example.dddonboarding.model.AcknowledgementRegisterAdu
-import com.fsck.k9.mail.ConnectionSecurity
-import com.fsck.k9.mail.ServerSettings
-import com.fsck.k9.mail.AuthType
-import com.example.dddonboarding.model.LoginAdu
-import com.example.dddonboarding.model.RegisterAdu
 import com.example.dddonboarding.repository.AuthRepository
 import com.example.dddonboarding.repository.AuthRepository.AuthState
 import com.example.dddonboarding.ui.login.LoginContract.State
 import com.example.dddonboarding.ui.login.LoginContract.Event
 import com.example.dddonboarding.ui.login.LoginContract.Effect
 import com.example.dddonboarding.util.CreateAccountConstants
-import com.fsck.k9.mail.FolderType
-import com.fsck.k9.mail.folders.FolderServerId
-import com.fsck.k9.mail.folders.RemoteFolder
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -73,7 +55,7 @@ class LoginViewModel(
         }
     }
 
-    private fun createAccount(ackAdu: AcknowledgementAdu) {
+    private fun createAccount(ackAdu: net.discdd.k9.onboarding.model.AcknowledgementAdu) {
         val accountState = AccountState(
             emailAddress = ackAdu.email,
             incomingServerSettings = CreateAccountConstants.INCOMING_SERVER_SETTINGS,
@@ -136,7 +118,7 @@ class LoginViewModel(
     }
 
     private fun login(email: String, password: String) {
-        authRepository.insertAdu(LoginAdu(email=email, password=password))
+        authRepository.insertAdu(net.discdd.k9.onboarding.model.LoginAdu(email = email, password = password))
         checkAuthState()
     }
 

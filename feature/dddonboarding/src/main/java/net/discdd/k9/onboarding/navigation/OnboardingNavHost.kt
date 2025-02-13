@@ -1,4 +1,4 @@
-package com.example.dddonboarding.navigation
+package net.discdd.k9.onboarding.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable

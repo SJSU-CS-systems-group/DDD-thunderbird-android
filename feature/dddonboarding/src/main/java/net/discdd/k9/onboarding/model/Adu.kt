@@ -1,4 +1,4 @@
-package com.example.dddonboarding.model
+package net.discdd.k9.onboarding.model
 
 interface Adu {
     val password: String

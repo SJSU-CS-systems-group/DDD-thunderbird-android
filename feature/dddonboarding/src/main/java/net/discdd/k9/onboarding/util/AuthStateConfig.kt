@@ -1,4 +1,4 @@
-package com.example.dddonboarding.util
+package net.discdd.k9.onboarding.util
 
 import android.content.Context
 import android.util.Log

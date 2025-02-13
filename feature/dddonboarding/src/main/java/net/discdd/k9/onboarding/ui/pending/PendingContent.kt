@@ -1,4 +1,4 @@
-package com.example.dddonboarding.ui.pending
+package net.discdd.k9.onboarding.ui.pending
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
