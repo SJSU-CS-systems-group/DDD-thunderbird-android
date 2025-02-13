@@ -44,15 +44,16 @@ fun OnboardingNavHost(
                 onRegisterClick = { navController.navigateToRegister() },
                 viewModel =  koinViewModel<LoginViewModel>(),
                 onPendingState = { navController.navigateToPending() },
-                onFinish = { onFinish }
+                onFinish = { createdAccountUuid: String ->
+                    onFinish(createdAccountUuid)
+                }
             )
         }
         composable(route = NESTED_NAVIGATION_ROUTE_REGISTER){
             RegisterScreen(
-                onRegisterClick = { navController.navigateToLogin() },
+                onLoginClick = { navController.navigateToLogin() },
                 viewModel =  koinViewModel<RegisterViewModel>(),
                 onPendingState = { navController.navigateToPending() },
-                onFinish = { onFinish }
             )
         }
         composable(route = NESTED_NAVIGATION_ROUTE_PENDING){

@@ -4,6 +4,21 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.k9mail.core.ui.compose.common.mvi.BaseViewModel
+import app.k9mail.feature.account.common.domain.entity.AccountDisplayOptions
+import app.k9mail.feature.account.common.domain.entity.AccountState
+import app.k9mail.feature.account.common.domain.entity.AccountSyncOptions
+import app.k9mail.feature.account.common.domain.entity.SpecialFolderOption
+import app.k9mail.feature.account.common.domain.entity.SpecialFolderSettings
+import app.k9mail.feature.account.common.ui.WizardConstants
+import app.k9mail.feature.account.setup.AccountSetupExternalContract.AccountCreator.AccountCreatorResult
+import app.k9mail.feature.account.setup.domain.entity.AccountUuid
+import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
+import app.k9mail.feature.account.setup.ui.createaccount.CreateAccountContract
+import com.example.dddonboarding.model.AcknowledgementAdu
+import com.example.dddonboarding.model.AcknowledgementRegisterAdu
+import com.fsck.k9.mail.ConnectionSecurity
+import com.fsck.k9.mail.ServerSettings
+import com.fsck.k9.mail.AuthType
 import com.example.dddonboarding.model.LoginAdu
 import com.example.dddonboarding.model.RegisterAdu
 import com.example.dddonboarding.repository.AuthRepository
@@ -11,6 +26,12 @@ import com.example.dddonboarding.repository.AuthRepository.AuthState
 import com.example.dddonboarding.ui.login.LoginContract.State
 import com.example.dddonboarding.ui.login.LoginContract.Event
 import com.example.dddonboarding.ui.login.LoginContract.Effect
+import com.example.dddonboarding.util.CreateAccountConstants
+import com.fsck.k9.mail.FolderType
+import com.fsck.k9.mail.folders.FolderServerId
+import com.fsck.k9.mail.folders.RemoteFolder
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,6 +43,7 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     initialState: State = State(),
+    private val createAccount: CreateAccount,
     private val authRepository: AuthRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(initialState)
@@ -41,19 +63,60 @@ class LoginViewModel(
     private fun checkAuthState() {
         val (state, ackAdu) = authRepository.getState()
         if (state == AuthState.PENDING){
-            Log.d("DDDOnboarding", "state is pending")
-            //emitEffect(Effect.OnPendingState)
-            viewModelScope.launch {
-                Log.d("DDDOnboarding", "emitting")
-                _effectFlow.emit(Effect.OnPendingState)
-            }
-        } else if (state == AuthState.LOGGED_IN) {
-            Log.d("DDDOnboarding", "state is logged in")
-            // create account
-            //emitEffect(Effect.OnLoggedInState)
-        } else {
-            Log.d("DDDOnboarding", "state is logged out")
+            navigatePending()
+        } else if (state == AuthState.LOGGED_IN && ackAdu != null) {
+            //if (ackAdu is AcknowledgementRegisterAdu) {
+            createAccount(ackAdu)
+            //}
+        } else if (state == AuthState.LOGGED_OUT && ackAdu != null) {
+            // display error on screen
         }
+    }
+
+    private fun createAccount(ackAdu: AcknowledgementAdu) {
+        val accountState = AccountState(
+            emailAddress = ackAdu.email,
+            incomingServerSettings = CreateAccountConstants.INCOMING_SERVER_SETTINGS,
+            outgoingServerSettings = CreateAccountConstants.OUTGOING_SERVER_SETTINGS,
+            specialFolderSettings = CreateAccountConstants.SPECIAL_FOLDER_SETTINGS,
+            displayOptions = CreateAccountConstants.DISPLAY_OPTIONS,
+            syncOptions = CreateAccountConstants.SYNC_OPTIONS
+        )
+
+        viewModelScope.launch {
+            when (val result = createAccount.execute(accountState)) {
+                is AccountCreatorResult.Success -> showSuccess(AccountUuid(result.accountUuid))
+                is AccountCreatorResult.Error -> showError(result)
+            }
+        }
+    }
+
+    private fun showSuccess(accountUuid: AccountUuid) {
+        /*updateState {
+            it.copy(
+                isLoading = false,
+                error = null,
+            )
+        }
+         */
+
+        Log.d("k9", "account creation success: $accountUuid.value")
+        viewModelScope.launch {
+            //delay(WizardConstants.CONTINUE_NEXT_DELAY)
+            navigateLoggedIn(accountUuid)
+        }
+    }
+
+    private fun showError(error: AccountCreatorResult.Error) {
+        Log.d("k9", "account creation failed")
+        /*
+        updateState {
+            it.copy(
+                isLoading = false,
+                error = error,
+            )
+        }
+         */
     }
 
     private fun setEmailAddress(email: String) {
@@ -75,5 +138,21 @@ class LoginViewModel(
     private fun login(email: String, password: String) {
         authRepository.insertAdu(LoginAdu(email=email, password=password))
         checkAuthState()
+    }
+
+    private fun navigatePending() {
+        Log.d("k9", "navigate pending")
+        viewModelScope.coroutineContext.cancelChildren()
+        viewModelScope.launch {
+            _effectFlow.emit(Effect.OnPendingState)
+        }
+    }
+
+    private fun navigateLoggedIn(accountUuid: AccountUuid) {
+        Log.d("k9", "navigate loggedin")
+        viewModelScope.coroutineContext.cancelChildren()
+        viewModelScope.launch {
+            _effectFlow.emit(Effect.OnLoggedInState(accountUuid))
+        }
     }
 }

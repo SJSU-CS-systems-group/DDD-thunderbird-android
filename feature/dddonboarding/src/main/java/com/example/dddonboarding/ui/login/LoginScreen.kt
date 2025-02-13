@@ -16,28 +16,21 @@ fun LoginScreen(
     onRegisterClick: () -> Unit,
     viewModel: LoginViewModel,
     onPendingState: () -> Unit,
-    onFinish: () -> Unit,
+    onFinish: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    /*val (state, dispatch) = viewModel.observe { effect ->
-        when (effect) {
-            Effect.OnPendingState -> onPendingState()
-            Effect.OnLoggedInState -> onPendingState()
-        }
-    }
-     */
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        //dispatch(Event.CheckAuthState)
         viewModel.event(Event.CheckAuthState)
     }
 
     LaunchedEffect(viewModel.effectFlow) {
         viewModel.effectFlow.collect { effect ->
+            Log.d("k9", "in effect: $effect")
             when (effect) {
                 Effect.OnPendingState -> onPendingState()
-                Effect.OnLoggedInState -> onPendingState()
+                is Effect.OnLoggedInState -> onFinish(effect.accountUuid.value)
             }
         }
     }

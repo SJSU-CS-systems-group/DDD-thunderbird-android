@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +27,7 @@ import com.example.dddonboarding.ui.register.RegisterContract.State
 internal fun RegisterContent(
     state: State,
     onEvent: (Event) -> Unit,
-    onRegisterClick: () -> Unit,
+    onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
     Surface(
@@ -51,7 +50,7 @@ internal fun RegisterContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = MainTheme.spacings.quadruple),
-                        onRegisterClick = onRegisterClick
+                        onLoginClick = onLoginClick
                     )
                 },
                 verticalArrangement =  Arrangement.SpaceEvenly
@@ -94,14 +93,14 @@ internal fun RegisterContent(
 
 @Composable
 private fun RegisterFooter(
-    onRegisterClick: () -> Unit,
+    onLoginClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        ButtonText(text = "Go login", onClick = onRegisterClick)
+        ButtonText(text = "Go login", onClick = onLoginClick)
     }
 }
 
