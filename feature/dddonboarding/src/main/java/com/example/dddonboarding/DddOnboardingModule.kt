@@ -1,5 +1,6 @@
 package com.example.dddonboarding
 
+import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
 import com.example.dddonboarding.repository.AuthRepositoryImpl
 import com.example.dddonboarding.repository.AuthRepository
 import com.example.dddonboarding.ui.login.LoginViewModel
@@ -17,8 +18,15 @@ val featureDddOnboardingModule: Module = module {
         context = get()
     ) }
 
+    factory<CreateAccount> {
+        CreateAccount(
+            accountCreator = get(),
+        )
+    }
+
     viewModel{
         LoginViewModel (
+            createAccount = get(),
             authRepository = get()
         )
     }
