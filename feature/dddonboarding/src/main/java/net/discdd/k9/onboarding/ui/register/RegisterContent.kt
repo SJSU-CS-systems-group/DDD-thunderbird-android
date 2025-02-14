@@ -20,8 +20,8 @@ import app.k9mail.core.ui.compose.designsystem.molecule.input.PasswordInput
 import app.k9mail.core.ui.compose.designsystem.template.LazyColumnWithHeaderFooter
 import app.k9mail.core.ui.compose.designsystem.template.ResponsiveContent
 import app.k9mail.core.ui.compose.theme2.MainTheme
-import com.example.dddonboarding.ui.register.RegisterContract.Event
-import com.example.dddonboarding.ui.register.RegisterContract.State
+import net.discdd.k9.onboarding.ui.register.RegisterContract.Event
+import net.discdd.k9.onboarding.ui.register.RegisterContract.State
 
 @Composable
 internal fun RegisterContent(

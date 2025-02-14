@@ -1,12 +1,13 @@
-package com.example.dddonboarding.ui.login
+package net.discdd.k9.onboarding.ui.register
+
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.dddonboarding.ui.register.RegisterContent
-import com.example.dddonboarding.ui.register.RegisterViewModel
-import com.example.dddonboarding.ui.register.RegisterContract.Effect
+import net.discdd.k9.onboarding.ui.register.RegisterContent
+import net.discdd.k9.onboarding.ui.register.RegisterViewModel
+import net.discdd.k9.onboarding.ui.register.RegisterContract.Effect
 
 @Composable
 fun RegisterScreen(

@@ -10,7 +10,7 @@ import app.k9mail.feature.account.setup.navigation.accountSetupRoute
 import app.k9mail.feature.launcher.FeatureLauncherExternalContract.AccountSetupFinishedLauncher
 import app.k9mail.feature.onboarding.main.navigation.NAVIGATION_ROUTE_ONBOARDING
 import app.k9mail.feature.onboarding.main.navigation.onboardingRoute
-import com.example.dddonboarding.navigation.dddOnboardingRoute
+import net.discdd.k9.onboarding.navigation.dddOnboardingRoute
 import org.koin.compose.koinInject
 
 @Composable

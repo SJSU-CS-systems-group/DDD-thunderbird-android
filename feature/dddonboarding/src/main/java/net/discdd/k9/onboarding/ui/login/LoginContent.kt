@@ -19,8 +19,8 @@ import app.k9mail.core.ui.compose.designsystem.molecule.input.PasswordInput
 import app.k9mail.core.ui.compose.designsystem.template.LazyColumnWithHeaderFooter
 import app.k9mail.core.ui.compose.designsystem.template.ResponsiveContent
 import app.k9mail.core.ui.compose.theme2.MainTheme
-import com.example.dddonboarding.ui.login.LoginContract.State
-import com.example.dddonboarding.ui.login.LoginContract.Event
+import net.discdd.k9.onboarding.ui.login.LoginContract.State
+import net.discdd.k9.onboarding.ui.login.LoginContract.Event
 
 @Composable
 internal fun LoginContent(

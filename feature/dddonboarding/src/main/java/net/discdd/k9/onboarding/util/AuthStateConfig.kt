@@ -2,7 +2,7 @@ package net.discdd.k9.onboarding.util
 
 import android.content.Context
 import android.util.Log
-import com.example.dddonboarding.repository.AuthRepository.AuthState
+import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

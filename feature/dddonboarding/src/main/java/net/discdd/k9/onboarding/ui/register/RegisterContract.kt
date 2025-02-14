@@ -3,8 +3,6 @@ package net.discdd.k9.onboarding.ui.register
 import app.k9mail.feature.account.common.domain.input.StringInputField
 
 interface RegisterContract {
-    //interface ViewModel: UnidirectionalViewModel<State, Event, Effect> {}
-
     data class State(
         val prefix1: StringInputField = StringInputField(),
         val prefix2: StringInputField = StringInputField(),

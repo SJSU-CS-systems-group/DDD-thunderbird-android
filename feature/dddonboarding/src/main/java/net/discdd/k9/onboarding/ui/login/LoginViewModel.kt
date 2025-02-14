@@ -7,12 +7,12 @@ import app.k9mail.feature.account.common.domain.entity.AccountState
 import app.k9mail.feature.account.setup.AccountSetupExternalContract.AccountCreator.AccountCreatorResult
 import app.k9mail.feature.account.setup.domain.entity.AccountUuid
 import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
-import com.example.dddonboarding.repository.AuthRepository
-import com.example.dddonboarding.repository.AuthRepository.AuthState
-import com.example.dddonboarding.ui.login.LoginContract.State
-import com.example.dddonboarding.ui.login.LoginContract.Event
-import com.example.dddonboarding.ui.login.LoginContract.Effect
-import com.example.dddonboarding.util.CreateAccountConstants
+import net.discdd.k9.onboarding.repository.AuthRepository
+import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
+import net.discdd.k9.onboarding.ui.login.LoginContract.State
+import net.discdd.k9.onboarding.ui.login.LoginContract.Event
+import net.discdd.k9.onboarding.ui.login.LoginContract.Effect
+import net.discdd.k9.onboarding.util.CreateAccountConstants
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,9 +47,7 @@ class LoginViewModel(
         if (state == AuthState.PENDING){
             navigatePending()
         } else if (state == AuthState.LOGGED_IN && ackAdu != null) {
-            //if (ackAdu is AcknowledgementRegisterAdu) {
             createAccount(ackAdu)
-            //}
         } else if (state == AuthState.LOGGED_OUT && ackAdu != null) {
             // display error on screen
         }
@@ -74,31 +72,12 @@ class LoginViewModel(
     }
 
     private fun showSuccess(accountUuid: AccountUuid) {
-        /*updateState {
-            it.copy(
-                isLoading = false,
-                error = null,
-            )
-        }
-         */
-
-        Log.d("k9", "account creation success: $accountUuid.value")
         viewModelScope.launch {
-            //delay(WizardConstants.CONTINUE_NEXT_DELAY)
             navigateLoggedIn(accountUuid)
         }
     }
 
     private fun showError(error: AccountCreatorResult.Error) {
-        Log.d("k9", "account creation failed")
-        /*
-        updateState {
-            it.copy(
-                isLoading = false,
-                error = error,
-            )
-        }
-         */
     }
 
     private fun setEmailAddress(email: String) {

@@ -12,7 +12,7 @@ import app.k9mail.feature.account.edit.navigation.withAccountUuid
 import app.k9mail.feature.account.setup.navigation.NAVIGATION_ROUTE_ACCOUNT_SETUP
 import app.k9mail.feature.launcher.ui.FeatureLauncherApp
 import app.k9mail.feature.onboarding.main.navigation.NAVIGATION_ROUTE_ONBOARDING
-import com.example.dddonboarding.navigation.NAVIGATION_ROUTE_DDD_ONBOARDING
+import net.discdd.k9.onboarding.navigation.NAVIGATION_ROUTE_DDD_ONBOARDING
 import com.fsck.k9.ui.base.K9Activity
 
 class FeatureLauncherActivity : K9Activity() {

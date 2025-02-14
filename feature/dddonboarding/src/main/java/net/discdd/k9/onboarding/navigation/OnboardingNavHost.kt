@@ -6,11 +6,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
-import com.example.dddonboarding.ui.login.LoginScreen
-import com.example.dddonboarding.ui.login.LoginViewModel
-import com.example.dddonboarding.ui.login.RegisterScreen
-import com.example.dddonboarding.ui.pending.PendingScreen
-import com.example.dddonboarding.ui.register.RegisterViewModel
+import net.discdd.k9.onboarding.ui.login.LoginScreen
+import net.discdd.k9.onboarding.ui.login.LoginViewModel
+import net.discdd.k9.onboarding.ui.pending.PendingScreen
+import net.discdd.k9.onboarding.ui.register.RegisterScreen
+import net.discdd.k9.onboarding.ui.register.RegisterViewModel
 import org.koin.androidx.compose.koinViewModel
 
 private const val NESTED_NAVIGATION_ROUTE_REGISTER = "register"

@@ -3,12 +3,12 @@ package net.discdd.k9.onboarding.ui.register
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dddonboarding.model.RegisterAdu
-import com.example.dddonboarding.repository.AuthRepository
-import com.example.dddonboarding.repository.AuthRepository.AuthState
-import com.example.dddonboarding.ui.register.RegisterContract.State
-import com.example.dddonboarding.ui.register.RegisterContract.Event
-import com.example.dddonboarding.ui.register.RegisterContract.Effect
+import net.discdd.k9.onboarding.model.RegisterAdu
+import net.discdd.k9.onboarding.repository.AuthRepository
+import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
+import net.discdd.k9.onboarding.ui.register.RegisterContract.State
+import net.discdd.k9.onboarding.ui.register.RegisterContract.Event
+import net.discdd.k9.onboarding.ui.register.RegisterContract.Effect
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -43,18 +43,10 @@ class RegisterViewModel(
     private fun checkAuthState() {
         val (state, ackAdu) = authRepository.getState()
         if (state == AuthState.PENDING){
-            Log.d("DDDOnboarding", "state is pending")
-            //emitEffect(Effect.OnPendingState)
             viewModelScope.launch {
                 Log.d("DDDOnboarding", "emitting")
                 _effectFlow.emit(Effect.OnPendingState)
             }
-        } else if (state == AuthState.LOGGED_IN) {
-            Log.d("DDDOnboarding", "state is logged in")
-            // create account
-            //emitEffect(Effect.OnLoggedInState)
-        } else {
-            Log.d("DDDOnboarding", "state is logged out")
         }
     }
 

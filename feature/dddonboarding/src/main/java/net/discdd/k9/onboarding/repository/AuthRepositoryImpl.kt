@@ -4,9 +4,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.example.dddonboarding.model.AcknowledgementRegisterAdu
-import com.example.dddonboarding.util.AuthStateConfig
-import com.example.dddonboarding.repository.AuthRepository.AuthState
+import net.discdd.k9.onboarding.model.AcknowledgementRegisterAdu
+import net.discdd.k9.onboarding.util.AuthStateConfig
+import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 
 class AuthRepositoryImpl(
     private val authStateConfig: AuthStateConfig,

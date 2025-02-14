@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.dddonboarding.ui.login.LoginContract.Event
-import com.example.dddonboarding.ui.login.LoginContract.Effect
+import net.discdd.k9.onboarding.ui.login.LoginContract.Event
+import net.discdd.k9.onboarding.ui.login.LoginContract.Effect
 
 @Composable
 fun LoginScreen(
