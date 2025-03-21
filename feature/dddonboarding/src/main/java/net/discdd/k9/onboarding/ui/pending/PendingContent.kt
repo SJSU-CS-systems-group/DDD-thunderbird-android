@@ -1,15 +1,24 @@
 package net.discdd.k9.onboarding.ui.pending
 
+import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import app.k9mail.core.ui.compose.designsystem.atom.Surface
+import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonText
 import app.k9mail.core.ui.compose.designsystem.atom.text.TextDisplayMedium
 import app.k9mail.core.ui.compose.designsystem.template.ResponsiveContent
 
 @Composable
-internal fun PendingContent(modifier: Modifier = Modifier) {
+internal fun PendingContent(
+    onRedoLogin: () -> Unit,
+    modifier: Modifier = Modifier
+
+) {
     Surface(
         modifier = modifier
     ) {
@@ -21,7 +30,28 @@ internal fun PendingContent(modifier: Modifier = Modifier) {
                     TextDisplayMedium(text = "Waiting for server response")
                     TextDisplayMedium(text = "Status = PENDING")
                 }
+                item {
+                    RedoLogin(onRedoLogin = onRedoLogin)
+                }
             }
         }
+    }
+}
+@Composable
+private fun RedoLogin(
+    onRedoLogin: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        ButtonText(
+            text = "Redo Login",
+            onClick = {
+                Log.d("RedoLogin", "Redo Login clicked")
+                onRedoLogin()
+            }
+        )
     }
 }

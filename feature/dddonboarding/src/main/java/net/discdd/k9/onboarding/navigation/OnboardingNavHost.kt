@@ -57,7 +57,9 @@ fun OnboardingNavHost(
             )
         }
         composable(route = NESTED_NAVIGATION_ROUTE_PENDING){
-            PendingScreen()
+            PendingScreen(
+                onRedoLogin = { navController.navigateToLogin() }
+            )
         }
     }
 }
