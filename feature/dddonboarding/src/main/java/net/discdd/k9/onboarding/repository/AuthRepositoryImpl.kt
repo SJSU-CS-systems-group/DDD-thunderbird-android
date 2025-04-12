@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import net.discdd.k9.onboarding.model.AcknowledgementRegisterAdu
+import net.discdd.k9.onboarding.model.Adu
 import net.discdd.k9.onboarding.util.AuthStateConfig
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 
@@ -24,11 +25,11 @@ class AuthRepositoryImpl(
                 setState(AuthState.LOGGED_IN)
                 return Pair(AuthState.LOGGED_IN, ackAdu)
             }
-            authStateConfig.deleteState()
-            return Pair(AuthState.LOGGED_OUT, ackAdu)
+
         }
 
-        return Pair(state, null)
+        authStateConfig.deleteState()
+        return Pair(AuthState.LOGGED_OUT, null)
     }
 
     private fun getAckAdu(): net.discdd.k9.onboarding.model.AcknowledgementAdu? {
@@ -78,4 +79,50 @@ class AuthRepositoryImpl(
             return false
         }
     }
+
+    override fun deleteState(): Boolean {
+        return try {
+            authStateConfig.deleteState()
+            Log.d("DDDOnboarding", "Deleting Auth State")
+            true
+        } catch (e: Exception) {
+            Log.e("DDDOnboarding", "Failed to delete state", e)
+            false
+        }
+    }
+
+    override fun deleteAuthAdu(): Boolean {
+        return try {
+            val cursor = context.contentResolver.query(CONTENT_URL, null, null, null, null)
+            if (cursor != null) {
+                Log.d("DDDOnboarding", "Found ${cursor.count} rows at $CONTENT_URL")
+
+                val columnNames = cursor.columnNames
+                Log.d("DDDOnboarding", "Columns: ${columnNames.joinToString()}")
+
+                while (cursor.moveToNext()) {
+                    val rowData = buildString {
+                        columnNames.forEach { column ->
+                            val value = cursor.getString(cursor.getColumnIndexOrThrow(column))
+                            append("$column: $value, ")
+                        }
+                    }
+                    Log.d("DDDOnboarding", "Row: $rowData")
+                }
+
+                cursor.close()
+            } else {
+                Log.d("DDDOnboarding", "Cursor is null at $CONTENT_URL")
+            }
+
+            val resolver = context.contentResolver
+            val rowsDeleted = resolver.delete(CONTENT_URL, null, null)
+            Log.d("DDDOnboarding", "Deleted $rowsDeleted ADU rows")
+            rowsDeleted > 0
+        } catch (e: Exception) {
+            Log.e("DDDOnboarding", "Failed to delete ADU", e)
+            false
+        }
+    }
+
 }

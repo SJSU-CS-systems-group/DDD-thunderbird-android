@@ -38,6 +38,7 @@ class AuthStateConfig(
         when (state) {
             "PENDING" -> return AuthState.PENDING
             "LOGGED_IN" -> return AuthState.LOGGED_IN
+            "LOGGED_OUT" -> return AuthState.LOGGED_OUT
         }
 
         return AuthState.LOGGED_OUT
