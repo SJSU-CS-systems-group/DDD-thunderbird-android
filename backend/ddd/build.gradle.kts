@@ -3,14 +3,14 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
 }
-//
+
 android {
     namespace = "net.discdd.k9"
     compileSdk = 34
 
     defaultConfig {
         applicationId = "net.discdd.k9"
-        minSdk = 34
+        minSdk = 33
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -29,6 +29,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.moshi)
+    implementation(libs.client.adapter)
+    implementation(libs.androidx.lifecycle.process)
     ksp(libs.moshi.kotlin.codegen)
 
     api(projects.backend.api)
