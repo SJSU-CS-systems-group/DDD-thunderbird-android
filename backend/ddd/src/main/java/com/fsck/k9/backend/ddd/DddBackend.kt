@@ -1,8 +1,7 @@
 package com.fsck.k9.backend.ddd
 
-import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.fsck.k9.backend.api.Backend
 import com.fsck.k9.backend.api.BackendFolder
@@ -24,24 +23,22 @@ import com.squareup.moshi.adapter
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.util.UUID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import net.discdd.adapter.DDDClientAdapter
 import okio.buffer
 import okio.source
-import net.discdd.adapter.DDDClientAdapter
 
 class DddBackend(
     context: Context,
     accountName: String,
     backendStorage: BackendStorage,
 ) : Backend {
-    private val dddAdapter= DDDClientAdapter(context, ProcessLifecycleOwner.get().lifecycle, {})
+    private lateinit var dddAdapter : DDDClientAdapter
     private val messageStoreInfo by lazy { readMessageStoreInfo() }
-    private val RESOLVER_COLUMNS = arrayOf("data")
-    private val context = context
     private val backendStorage = backendStorage
 
-    companion object {
-        val CONTENT_URL: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/messages")
-    }
     override val supportsFlags = false
     override val supportsExpunge = false
     override val supportsMove = false
@@ -51,6 +48,12 @@ class DddBackend(
     override val supportsSearchByDate = false
     override val supportsFolderSubscriptions = false
     override val isPushCapable = false
+
+     init {
+         CoroutineScope(Dispatchers.Main).launch {
+             dddAdapter = DDDClientAdapter(context, ProcessLifecycleOwner.get().lifecycle, {})
+         }
+    }
 
     override fun refreshFolderList() {
         val localFolderServerIds = backendStorage.getFolderServerIds().toSet()
@@ -78,58 +81,24 @@ class DddBackend(
         } ?: error("Couldn't read message store info for ddd")
     }
 
-    private fun getAllPendingMailIds(): List<Long> {
-        try {
-            val resolver = context.contentResolver
-            val cursor = resolver.query(CONTENT_URL, RESOLVER_COLUMNS, "aduIds", null, null)
-
-            cursor ?: throw NullPointerException("Cursor is null")
-            val aduIds = mutableListOf<Long>()
-            if (cursor.moveToFirst()) {
-                do {
-                    val aduId = cursor.getLong(cursor.getColumnIndexOrThrow(RESOLVER_COLUMNS[0]))
-                    aduIds.add(aduId)
-                } while (cursor.moveToNext())
-            }
-
-            cursor.close()
-            return aduIds
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-            return emptyList()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return emptyList()
-        }
-    }
-
     private fun getResourceAsStream(name: String): InputStream {
         return DddBackend::class.java.getResourceAsStream(name) ?: error("Resource '$name' not found")
     }
 
     @Throws(NullPointerException::class)
     private fun loadMessage(folderServerId: String, messageServerId: String): Message {
-        val resolver = context.contentResolver
-        val cursor = resolver.query(CONTENT_URL, RESOLVER_COLUMNS, "aduData", arrayOf(messageServerId), null)
+        val aduId = messageServerId.toLong()
 
-        cursor ?: throw NullPointerException("Cursor is null")
-        var messageBytes: ByteArray? = null
+        Log.d("loadMsg ", messageServerId)
 
-        if (cursor.moveToFirst()) {
-            messageBytes = cursor.getBlob(cursor.getColumnIndexOrThrow(RESOLVER_COLUMNS[0]))
-        }
-
-        cursor.close()
-
-        if (messageBytes == null) {
-            throw NullPointerException("Message bytes are null")
-        }
+        val messageBytes: ByteArray = dddAdapter.receiveAdu(aduId).use { it.readAllBytes() }
 
         val inputStream = messageBytes.inputStream()
         val mimeMessage = MimeMessage.parseMimeMessage(inputStream, false).apply { uid = messageServerId }
 
         return mimeMessage
     }
+
 
     override fun sync(folderServerId: String, syncConfig: SyncConfig, listener: SyncListener) {
         listener.syncStarted(folderServerId)
@@ -145,7 +114,7 @@ class DddBackend(
             //TO-DO:
             // we might need to delete mails one at a time, after calling the saveMessage.
             // This implementation might process the same message multiple times
-            val mailIdsToSync = getAllPendingMailIds()
+            val mailIdsToSync = dddAdapter.getIncomingAduIds()
             var lastMsgServerIdProcessed = 0L;
             for (messageServerId in mailIdsToSync) {
                 val message = loadMessage(folderServerId, messageServerId.toString())
@@ -157,7 +126,7 @@ class DddBackend(
                 }
             }
 
-            context.contentResolver.delete(CONTENT_URL, "deleteAllADUsUpto", arrayOf(lastMsgServerIdProcessed.toString()))
+            dddAdapter.deleteReceivedAdusUpTo(lastMsgServerIdProcessed)
             backendFolder.setMoreMessages(BackendFolder.MoreMessages.FALSE)
             listener.syncFinished(folderServerId)
         } catch (e: Exception) {
@@ -255,25 +224,13 @@ class DddBackend(
         if (message.size > 0) {
             return
         }
+
         val byteArrayOutputStream = ByteArrayOutputStream()
         message.writeTo(byteArrayOutputStream)
 
-        val values = ContentValues().apply {
-            put(RESOLVER_COLUMNS[0], byteArrayOutputStream.toByteArray())
+        dddAdapter.createAduToSend().use { os ->
+            os.write(byteArrayOutputStream.toByteArray())
         }
-
-        try {
-            val resolver = context.contentResolver
-            val uri = resolver.insert(CONTENT_URL, values)
-            if (uri == null) {
-                throw Exception("Message not inserted")
-            }
-        } catch (e: IllegalArgumentException) {
-            e.printStackTrace()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
     }
 
     override fun createPusher(callback: BackendPusherCallback): BackendPusher {
