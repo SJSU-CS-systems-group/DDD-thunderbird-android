@@ -45,8 +45,6 @@ class PendingViewModel(
     }
 
     private fun redoLogin() {
-        authRepository.deleteState()
-        authRepository.deleteAuthAdu()
         checkAuthState()
     }
 }

@@ -15,6 +15,4 @@ interface AuthRepository {
 
     fun setState(state: AuthState)
     fun insertAdu(adu: net.discdd.k9.onboarding.model.Adu): Boolean
-    fun deleteState(): Boolean
-    fun deleteAuthAdu(): Boolean
 }
