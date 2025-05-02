@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import net.discdd.k9.onboarding.model.AcknowledgementRegisterAdu
+import net.discdd.k9.onboarding.model.Adu
 import net.discdd.k9.onboarding.util.AuthStateConfig
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 
@@ -24,11 +25,11 @@ class AuthRepositoryImpl(
                 setState(AuthState.LOGGED_IN)
                 return Pair(AuthState.LOGGED_IN, ackAdu)
             }
-            authStateConfig.deleteState()
-            return Pair(AuthState.LOGGED_OUT, ackAdu)
+
         }
 
-        return Pair(state, null)
+        authStateConfig.deleteState()
+        return Pair(AuthState.LOGGED_OUT, null)
     }
 
     private fun getAckAdu(): net.discdd.k9.onboarding.model.AcknowledgementAdu? {

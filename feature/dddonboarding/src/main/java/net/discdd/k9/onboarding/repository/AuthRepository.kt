@@ -14,6 +14,5 @@ interface AuthRepository {
     fun getState(): Pair<AuthState, net.discdd.k9.onboarding.model.AcknowledgementAdu?>
 
     fun setState(state: AuthState)
-
     fun insertAdu(adu: net.discdd.k9.onboarding.model.Adu): Boolean
 }

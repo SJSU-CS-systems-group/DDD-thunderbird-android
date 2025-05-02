@@ -12,6 +12,7 @@ import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.ui.login.LoginContract.State
 import net.discdd.k9.onboarding.ui.login.LoginContract.Event
 import net.discdd.k9.onboarding.ui.login.LoginContract.Effect
+
 import net.discdd.k9.onboarding.util.CreateAccountConstants
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -45,11 +46,12 @@ class LoginViewModel(
     private fun checkAuthState() {
         val (state, ackAdu) = authRepository.getState()
         if (state == AuthState.PENDING){
+            Log.d("LoginViewModel", "state " + state)
             navigatePending()
         } else if (state == AuthState.LOGGED_IN && ackAdu != null) {
             createAccount(ackAdu)
-        } else if (state == AuthState.LOGGED_OUT && ackAdu != null) {
-            // display error on screen
+        } else if (state == AuthState.LOGGED_OUT) {
+            // TODO
         }
     }
 

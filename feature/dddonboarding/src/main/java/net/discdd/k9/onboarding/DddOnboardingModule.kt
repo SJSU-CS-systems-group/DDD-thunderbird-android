@@ -4,6 +4,7 @@ import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
 import net.discdd.k9.onboarding.repository.AuthRepositoryImpl
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.ui.login.LoginViewModel
+import net.discdd.k9.onboarding.ui.pending.PendingViewModel
 import net.discdd.k9.onboarding.ui.register.RegisterViewModel
 import net.discdd.k9.onboarding.util.AuthStateConfig
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -32,6 +33,12 @@ val featureDddOnboardingModule: Module = module {
 
     viewModel{
         RegisterViewModel (
+            authRepository = get()
+        )
+    }
+
+    viewModel{
+        PendingViewModel (
             authRepository = get()
         )
     }
