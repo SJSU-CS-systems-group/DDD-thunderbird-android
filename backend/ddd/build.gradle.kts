@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
+    //implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.moshi)
     implementation(libs.client.adapter)

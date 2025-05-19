@@ -36,11 +36,11 @@ dependencies {
 }
 
 android {
-    namespace = "com.fsck.k9"
+    namespace = "net.discdd.k9"
 
     defaultConfig {
-        applicationId = "com.fsck.k9"
-        testApplicationId = "com.fsck.k9.tests"
+        applicationId = "net.discdd.k9"
+        testApplicationId = "net.discdd.k9.tests"
 
         versionCode = 39004
         versionName = "6.905-SNAPSHOT"

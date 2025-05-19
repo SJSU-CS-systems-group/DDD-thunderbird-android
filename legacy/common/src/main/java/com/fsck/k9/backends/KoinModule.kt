@@ -14,10 +14,8 @@ val backendsModule = module {
         val developmentBackends = get<Map<String, BackendFactory>>(named("developmentBackends"))
         BackendManager(
             mapOf(
-                "imap" to get<ImapBackendFactory>(),
-                "pop3" to get<Pop3BackendFactory>(),
                 "ddd" to get<DddBackendFactory>(),
-            ) + developmentBackends,
+            ),
         )
     }
     single {

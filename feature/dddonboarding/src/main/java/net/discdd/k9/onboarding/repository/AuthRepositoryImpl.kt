@@ -4,6 +4,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
+import java.util.logging.Level
+import java.util.logging.Logger
 import net.discdd.k9.onboarding.model.AcknowledgementRegisterAdu
 import net.discdd.k9.onboarding.model.Adu
 import net.discdd.k9.onboarding.util.AuthStateConfig
@@ -13,6 +16,9 @@ class AuthRepositoryImpl(
     private val authStateConfig: AuthStateConfig,
     private val context: Context
 ): AuthRepository {
+    companion object {
+        private val logger: Logger = Logger.getLogger(AuthRepositoryImpl::class.java.name)
+    }
     private val RESOLVER_COLUMNS = arrayOf("data")
     override val CONTENT_URL: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/messages");
 
@@ -76,6 +82,8 @@ class AuthRepositoryImpl(
             authStateConfig.writeState(AuthState.PENDING)
             return true
         } catch (e: Exception) {
+            Toast.makeText(context, "Failed communication to DDD Client: ${e.message}", Toast.LENGTH_LONG).show()
+            logger.log(Level.SEVERE, "DDDOnboarding", "Failed to insert Adu: ${e.message}")
             return false
         }
     }

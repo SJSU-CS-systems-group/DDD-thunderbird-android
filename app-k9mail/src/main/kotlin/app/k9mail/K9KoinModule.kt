@@ -10,7 +10,7 @@ import app.k9mail.provider.K9AppNameProvider
 import app.k9mail.provider.K9FeatureThemeProvider
 import app.k9mail.widget.appWidgetModule
 import com.fsck.k9.AppConfig
-import com.fsck.k9.BuildConfig
+import net.discdd.k9.BuildConfig
 import com.fsck.k9.activity.MessageCompose
 import com.fsck.k9.provider.UnreadWidgetProvider
 import com.fsck.k9.widget.list.MessageListWidgetProvider
