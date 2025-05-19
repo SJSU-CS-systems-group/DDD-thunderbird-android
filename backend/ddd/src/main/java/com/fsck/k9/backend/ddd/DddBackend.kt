@@ -3,7 +3,6 @@ package com.fsck.k9.backend.ddd
 import android.content.Context
 import android.util.Log
 
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.fsck.k9.backend.api.Backend
 import com.fsck.k9.backend.api.BackendFolder
 import com.fsck.k9.backend.api.BackendPusher
@@ -52,7 +51,13 @@ class DddBackend(
 
      init {
          CoroutineScope(Dispatchers.Main).launch {
-             dddAdapter = DDDClientAdapter(context, ProcessLifecycleOwner.get().lifecycle, {})
+             // this disgusting reflection is needed due to build problems trying to
+             // declare a dependency on androidx.lifecycle
+             val plo = "androidx.lifecycle.ProcessLifecycleOwner"
+             val lifecycleOwner = Class.forName(plo).getMethod("get").invoke(null)
+             val lifecycle = lifecycleOwner.javaClass.getField("lifecycle").get(lifecycleOwner)
+             dddAdapter = Class.forName("net.discdd.adapter.DDDClientAdapter")
+                 .constructors[0].newInstance(context, lifecycle, {}) as DDDClientAdapter
          }
     }
 
