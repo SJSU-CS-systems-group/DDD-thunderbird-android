@@ -5,15 +5,19 @@ plugins {
 }
 
 android {
-    namespace = "net.discdd.k9"
+    namespace = "net.discdd.k9.backend.ddd"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "net.discdd.k9"
+        applicationId = "net.discdd.k9.backend.ddd"
         minSdk = 33
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+    }
+
+    androidResources {
+        namespaced = true
     }
 
     compileOptions {
@@ -26,7 +30,6 @@ android {
 }
 
 dependencies {
-    //implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.moshi)
     implementation(libs.client.adapter)
