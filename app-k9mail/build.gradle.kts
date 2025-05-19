@@ -109,7 +109,21 @@ android {
     }
 
     signingConfigs {
-        createSigningConfig(project, SigningType.K9_RELEASE, isUpload = false)
+        val storeFile = project.findProperty("k9.release.storeFile") as? String
+        val storePassword = project.findProperty("k9.release.storePassword") as? String
+        val keyAlias = project.findProperty("k9.release.keyAlias") as? String
+        val keyPassword = project.findProperty("k9.release.keyPassword") as? String
+
+        if (storeFile != null && storePassword != null && keyAlias != null && keyPassword != null) {
+            create(SigningType.K9_RELEASE.type) {
+                this.storeFile = project.file(storeFile)
+                this.storePassword = storePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            }
+        } else {
+            createSigningConfig(project, SigningType.K9_RELEASE, isUpload = false)
+        }
     }
 
     buildTypes {
