@@ -11,7 +11,28 @@ interface RegisterContract {
         val suffix2: StringInputField = StringInputField(),
         val suffix3: StringInputField = StringInputField(),
         val password: StringInputField = StringInputField(),
-    )
+    ) {
+        val readyToRegister
+            get(): Boolean {
+                return validPrefix && validSuffix && validPassword
+            }
+
+        val validPrefix
+            get(): Boolean {
+                val prefixString = prefix1.value
+                return prefixString.length in 3..8 && prefixString.all { it in 'a'..'z' }
+            }
+        val validSuffix
+            get(): Boolean {
+                val suffixString = suffix1.value
+                return suffixString.length in 3..8 && suffixString.all { it in 'a'..'z' }
+            }
+        val validPassword
+            get(): Boolean {
+                val passwordString = password.value
+                return passwordString.length >= 8 && passwordString.count { it.isDigit() } >= 1 && passwordString.toSet().size >= 3
+            }
+    }
 
     sealed interface Event {
         data class Prefix1Changed(val prefix: String): Event

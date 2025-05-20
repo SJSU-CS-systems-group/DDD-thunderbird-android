@@ -6,20 +6,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import app.k9mail.core.ui.compose.designsystem.atom.Surface
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonFilledTonal
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonText
 import app.k9mail.core.ui.compose.designsystem.atom.text.TextDisplayMedium
+import app.k9mail.core.ui.compose.designsystem.atom.text.TextDisplaySmall
 import app.k9mail.core.ui.compose.designsystem.atom.textfield.TextFieldOutlined
 import app.k9mail.core.ui.compose.designsystem.molecule.input.PasswordInput
 import app.k9mail.core.ui.compose.designsystem.template.LazyColumnWithHeaderFooter
 import app.k9mail.core.ui.compose.designsystem.template.ResponsiveContent
 import app.k9mail.core.ui.compose.theme2.MainTheme
+import com.example.dddonboarding.R
 import net.discdd.k9.onboarding.ui.register.RegisterContract.Event
 import net.discdd.k9.onboarding.ui.register.RegisterContract.State
 
@@ -70,6 +75,7 @@ internal fun RegisterContent(
                     ) {
                         ButtonFilledTonal(
                             text = "Register",
+                            enabled = state.readyToRegister,
                             onClick = {
                                 onEvent(
                                     Event.OnClickRegister(
@@ -117,36 +123,41 @@ private fun RegisterInputs(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        Text("Your email address with be the chosen prefix and suffix with some random numbers and letters in between.")
+        if (!state.validPrefix) {
+            Text(
+                text = stringResource(R.string.prefix_must_be_between_3_and_8_letters),
+                color = MainTheme.colors.error,
+                textAlign = TextAlign.Center,
+            )
+        }
+
         TextFieldOutlined(
             value = state.prefix1.value,
             onValueChange = { onEvent(Event.Prefix1Changed(it)) },
-            label = "Prefix 1"
+            label = "Prefix"
         )
-        TextFieldOutlined(
-            value = state.prefix2.value,
-            onValueChange = {onEvent(Event.Prefix2Changed(it))},
-            label = "Prefix 2"
-        )
-        TextFieldOutlined(
-            value = state.prefix3.value,
-            onValueChange = {onEvent(Event.Prefix3Changed(it))},
-            label = "Prefix 3",
-        )
+
+        if (!state.validSuffix) {
+            TextDisplaySmall(
+                text = stringResource(R.string.suffix_must_be_between_3_and_8_letters),
+                color = MainTheme.colors.error,
+                textAlign = TextAlign.Center,
+            )
+        }
+
         TextFieldOutlined(
             value = state.suffix1.value,
             onValueChange = {onEvent(Event.Suffix1Changed(it))},
-            label = "Suffix 1",
+            label = "Suffix",
         )
-        TextFieldOutlined(
-            value = state.suffix2.value,
-            onValueChange = {onEvent(Event.Suffix2Changed(it))},
-            label = "Suffix 2",
-        )
-        TextFieldOutlined(
-            value = state.suffix3.value,
-            onValueChange = {onEvent(Event.Suffix3Changed(it))},
-            label = "Suffix 3"
-        )
+        if (!state.validPassword) {
+            TextDisplaySmall(
+                text = stringResource(R.string.password_must_be_at_least_8_characters_and_contain_at_least_3_different_letters_and_1_digit),
+                color = MainTheme.colors.error,
+                textAlign = TextAlign.Center,
+            )
+        }
         PasswordInput(password = state.password.value, onPasswordChange = {onEvent(Event.PasswordChanged(it))})
     }
 }

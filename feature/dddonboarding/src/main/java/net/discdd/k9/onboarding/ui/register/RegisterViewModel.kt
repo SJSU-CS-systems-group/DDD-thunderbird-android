@@ -1,8 +1,13 @@
 package net.discdd.k9.onboarding.ui.register
 
 import android.util.Log
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.k9mail.core.ui.compose.designsystem.atom.text.TextDisplayMedium
+import app.k9mail.core.ui.compose.theme2.MainTheme
+import com.example.dddonboarding.R
 import net.discdd.k9.onboarding.model.RegisterAdu
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
@@ -77,7 +82,7 @@ class RegisterViewModel(
     private fun setSuffix1(suffix: String) {
         _state.update {
             it.copy (
-                suffix1 = it.suffix1.updateValue(suffix)
+                suffix1 = it.suffix1.updateValue(suffix),
             )
         }
     }
@@ -101,7 +106,7 @@ class RegisterViewModel(
     private fun setPassword(password: String) {
         _state.update {
             it.copy(
-                password = it.password.updateValue(password)
+                password = it.password.updateValue(password),
             )
         }
     }
