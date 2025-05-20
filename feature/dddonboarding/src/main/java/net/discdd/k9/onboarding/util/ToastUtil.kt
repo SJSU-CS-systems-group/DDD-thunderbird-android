@@ -11,7 +11,8 @@ fun showToast(context: Context, message: String?) {
             Toast.makeText(
                 context,
                 message ?: "Unknown error",
-                Toast.LENGTH_LONG
+                Toast.LENGTH_LONG,
             ).show()
-        })
+        },
+    )
 }

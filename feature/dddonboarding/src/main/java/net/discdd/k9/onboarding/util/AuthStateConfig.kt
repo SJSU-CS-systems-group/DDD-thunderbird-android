@@ -36,7 +36,6 @@ class AuthStateConfig(
             "LOGGED_IN" -> AuthState.LOGGED_IN
             "LOGGED_OUT" -> AuthState.LOGGED_OUT
             else -> AuthState.LOGGED_OUT
-
         }
     }
 

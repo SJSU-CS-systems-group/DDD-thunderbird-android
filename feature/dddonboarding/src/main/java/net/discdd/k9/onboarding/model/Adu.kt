@@ -16,7 +16,6 @@ interface AcknowledgementAdu {
         const val MESSAGE_INDEX = 2
         const val SUCCESS_INDEX = 1
         const val TYPE_INDEX = 0
-
     }
     val email: String?
     val password: String?

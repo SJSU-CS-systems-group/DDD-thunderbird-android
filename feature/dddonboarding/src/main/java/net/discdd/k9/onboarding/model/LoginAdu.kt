@@ -17,7 +17,6 @@ data class LoginAdu(
     }
 }
 
-
 data class AcknowledgementLoginAdu(
     override val email: String?,
     override val password: String?,

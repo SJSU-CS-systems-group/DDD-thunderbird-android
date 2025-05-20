@@ -43,7 +43,7 @@ data class AcknowledgementRegisterAdu(
                     email = null,
                     password = null,
                     success = false,
-                    message = dataArr[MESSAGE_INDEX]
+                    message = dataArr[MESSAGE_INDEX],
                 )
             }
         }

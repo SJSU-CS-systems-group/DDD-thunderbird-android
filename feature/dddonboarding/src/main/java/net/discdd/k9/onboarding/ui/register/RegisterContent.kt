@@ -59,7 +59,7 @@ internal fun RegisterContent(
                 },
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
-                item { RegisterInputs( state = state, onEvent = onEvent,) }
+                item { RegisterInputs(state = state, onEvent = onEvent) }
                 item {
                     Box(
                         modifier = Modifier
