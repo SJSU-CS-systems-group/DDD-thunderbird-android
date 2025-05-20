@@ -7,13 +7,12 @@ import androidx.compose.ui.Modifier
 import net.discdd.k9.onboarding.ui.pending.PendingContract.Effect
 import net.discdd.k9.onboarding.ui.pending.PendingContract.Event
 
-
 @Composable
 fun PendingScreen(
     onRedoLoginState: () -> Unit,
     viewModel: PendingViewModel,
-    modifier: Modifier = Modifier
-){
+    modifier: Modifier = Modifier,
+) {
     LaunchedEffect(Unit) {
         viewModel.event(Event.CheckAuthState)
     }
@@ -30,6 +29,6 @@ fun PendingScreen(
     Log.d("DDDOnboarding", "In pending")
     PendingContent(
         onRedoLoginClick = { viewModel.event(Event.OnRedoLoginClick) },
-        modifier = modifier
-        )
+        modifier = modifier,
+    )
 }

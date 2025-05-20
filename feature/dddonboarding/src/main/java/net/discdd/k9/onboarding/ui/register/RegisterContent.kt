@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import app.k9mail.core.ui.compose.designsystem.atom.Surface
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonFilledTonal
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonText
@@ -33,10 +32,10 @@ internal fun RegisterContent(
     state: State,
     onEvent: (Event) -> Unit,
     onLoginClick: () -> Unit,
-    modifier: Modifier = Modifier
-){
+    modifier: Modifier = Modifier,
+) {
     Surface(
-        modifier = modifier
+        modifier = modifier,
     ) {
         ResponsiveContent {
             LazyColumnWithHeaderFooter(
@@ -47,7 +46,7 @@ internal fun RegisterContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 50.dp),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 },
                 footer = {
@@ -55,15 +54,15 @@ internal fun RegisterContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = MainTheme.spacings.quadruple),
-                        onLoginClick = onLoginClick
+                        onLoginClick = onLoginClick,
                     )
                 },
-                verticalArrangement =  Arrangement.SpaceEvenly
+                verticalArrangement = Arrangement.SpaceEvenly,
             ) {
                 item {
                     RegisterInputs(
                         state = state,
-                        onEvent = onEvent
+                        onEvent = onEvent,
                     )
                 }
                 item {
@@ -71,7 +70,7 @@ internal fun RegisterContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 16.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         ButtonFilledTonal(
                             text = "Register",
@@ -85,10 +84,10 @@ internal fun RegisterContent(
                                         state.suffix1.value,
                                         state.suffix2.value,
                                         state.suffix3.value,
-                                        state.password.value
-                                    )
+                                        state.password.value,
+                                    ),
                                 )
-                            }
+                            },
                         )
                     }
                 }
@@ -100,11 +99,11 @@ internal fun RegisterContent(
 @Composable
 private fun RegisterFooter(
     onLoginClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         ButtonText(text = "Go login", onClick = onLoginClick)
     }
@@ -114,16 +113,16 @@ private fun RegisterFooter(
 private fun RegisterInputs(
     state: State,
     onEvent: (Event) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Your email address with be the chosen prefix and suffix with some random numbers and letters in between.")
+        Text(stringResource(R.string.email_address_formation))
         if (!state.validPrefix) {
             Text(
                 text = stringResource(R.string.prefix_must_be_between_3_and_8_letters),
@@ -135,7 +134,7 @@ private fun RegisterInputs(
         TextFieldOutlined(
             value = state.prefix1.value,
             onValueChange = { onEvent(Event.Prefix1Changed(it)) },
-            label = "Prefix"
+            label = "Prefix",
         )
 
         if (!state.validSuffix) {
@@ -148,16 +147,16 @@ private fun RegisterInputs(
 
         TextFieldOutlined(
             value = state.suffix1.value,
-            onValueChange = {onEvent(Event.Suffix1Changed(it))},
+            onValueChange = { onEvent(Event.Suffix1Changed(it)) },
             label = "Suffix",
         )
         if (!state.validPassword) {
             TextDisplaySmall(
-                text = stringResource(R.string.password_must_be_at_least_8_characters_and_contain_at_least_3_different_letters_and_1_digit),
+                text = stringResource(R.string.password_requirements),
                 color = MainTheme.colors.error,
                 textAlign = TextAlign.Center,
             )
         }
-        PasswordInput(password = state.password.value, onPasswordChange = {onEvent(Event.PasswordChanged(it))})
+        PasswordInput(password = state.password.value, onPasswordChange = { onEvent(Event.PasswordChanged(it)) })
     }
 }

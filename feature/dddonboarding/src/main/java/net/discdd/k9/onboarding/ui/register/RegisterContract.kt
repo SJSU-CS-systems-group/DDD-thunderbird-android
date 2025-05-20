@@ -30,23 +30,32 @@ interface RegisterContract {
         val validPassword
             get(): Boolean {
                 val passwordString = password.value
-                return passwordString.length >= 8 && passwordString.count { it.isDigit() } >= 1 && passwordString.toSet().size >= 3
+                return passwordString.length >= 8 && passwordString.count { it.isDigit() } >= 1 &&
+                    passwordString.toSet().size >= 3
             }
     }
 
     sealed interface Event {
-        data class Prefix1Changed(val prefix: String): Event
-        data class Prefix2Changed(val prefix: String): Event
-        data class Prefix3Changed(val prefix: String): Event
-        data class Suffix1Changed(val suffix: String): Event
-        data class Suffix2Changed(val suffix: String): Event
-        data class Suffix3Changed(val suffix: String): Event
-        data class PasswordChanged(val password: String): Event
-        data class OnClickRegister(val prefix1: String, val prefix2: String, val prefix3: String, val suffix1: String, val suffix2: String, val suffix3: String, val password: String): Event
+        data class Prefix1Changed(val prefix: String) : Event
+        data class Prefix2Changed(val prefix: String) : Event
+        data class Prefix3Changed(val prefix: String) : Event
+        data class Suffix1Changed(val suffix: String) : Event
+        data class Suffix2Changed(val suffix: String) : Event
+        data class Suffix3Changed(val suffix: String) : Event
+        data class PasswordChanged(val password: String) : Event
+        data class OnClickRegister(
+            val prefix1: String,
+            val prefix2: String,
+            val prefix3: String,
+            val suffix1: String,
+            val suffix2: String,
+            val suffix3: String,
+            val password: String,
+        ) : Event
     }
 
     sealed interface Effect {
-        data object OnPendingState: Effect
-        data object OnLoggedInState: Effect
+        data object OnPendingState : Effect
+        data object OnLoggedInState : Effect
     }
 }

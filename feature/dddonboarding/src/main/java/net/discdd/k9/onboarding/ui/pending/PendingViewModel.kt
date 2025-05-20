@@ -3,27 +3,25 @@ package net.discdd.k9.onboarding.ui.pending
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-
-import net.discdd.k9.onboarding.repository.AuthRepository
-import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
-import net.discdd.k9.onboarding.ui.pending.PendingContract.Event
-import net.discdd.k9.onboarding.ui.pending.PendingContract.Effect
-
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import net.discdd.k9.onboarding.repository.AuthRepository
+import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
+import net.discdd.k9.onboarding.ui.pending.PendingContract.Effect
+import net.discdd.k9.onboarding.ui.pending.PendingContract.Event
 
 class PendingViewModel(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
     private val _effectFlow = MutableSharedFlow<Effect>(replay = 1)
     val effectFlow: SharedFlow<Effect> = _effectFlow.asSharedFlow()
     fun event(event: Event) {
-        when (event){
+        when (event) {
             Event.OnRedoLoginClick -> redoLogin()
-            Event.CheckAuthState  -> checkAuthState()
+            Event.CheckAuthState -> checkAuthState()
         }
     }
 

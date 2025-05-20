@@ -8,6 +8,6 @@ interface Adu {
 interface AcknowledgementAdu {
     val email: String?
     val password: String?
-    val success:Boolean
+    val success: Boolean
     val message: String?
 }

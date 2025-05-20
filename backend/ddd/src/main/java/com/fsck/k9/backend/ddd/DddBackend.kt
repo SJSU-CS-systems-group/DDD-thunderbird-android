@@ -2,7 +2,6 @@ package com.fsck.k9.backend.ddd
 
 import android.content.Context
 import android.util.Log
-
 import com.fsck.k9.backend.api.Backend
 import com.fsck.k9.backend.api.BackendFolder
 import com.fsck.k9.backend.api.BackendPusher
@@ -35,7 +34,7 @@ class DddBackend(
     accountName: String,
     backendStorage: BackendStorage,
 ) : Backend {
-    private lateinit var dddAdapter : DDDClientAdapter
+    private lateinit var dddAdapter: DDDClientAdapter
     private val messageStoreInfo by lazy { readMessageStoreInfo() }
     private val backendStorage = backendStorage
 
@@ -49,16 +48,16 @@ class DddBackend(
     override val supportsFolderSubscriptions = false
     override val isPushCapable = false
 
-     init {
-         CoroutineScope(Dispatchers.Main).launch {
-             // this disgusting reflection is needed due to build problems trying to
-             // declare a dependency on androidx.lifecycle
-             val plo = "androidx.lifecycle.ProcessLifecycleOwner"
-             val lifecycleOwner = Class.forName(plo).getMethod("get").invoke(null)
-             val lifecycle = lifecycleOwner.javaClass.getField("lifecycle").get(lifecycleOwner)
-             dddAdapter = Class.forName("net.discdd.adapter.DDDClientAdapter")
-                 .constructors[0].newInstance(context, lifecycle, {}) as DDDClientAdapter
-         }
+    init {
+        CoroutineScope(Dispatchers.Main).launch {
+            // this disgusting reflection is needed due to build problems trying to
+            // declare a dependency on androidx.lifecycle
+            val plo = "androidx.lifecycle.ProcessLifecycleOwner"
+            val lifecycleOwner = Class.forName(plo).getMethod("get").invoke(null)
+            val lifecycle = lifecycleOwner.javaClass.getField("lifecycle").get(lifecycleOwner)
+            dddAdapter = Class.forName("net.discdd.adapter.DDDClientAdapter")
+                .constructors[0].newInstance(context, lifecycle, {}) as DDDClientAdapter
+        }
     }
 
     override fun refreshFolderList() {
@@ -78,6 +77,7 @@ class DddBackend(
             deleteFolders(folderServerIdsToRemove)
         }
     }
+
     @OptIn(ExperimentalStdlibApi::class)
     private fun readMessageStoreInfo(): MessageStoreInfo {
         return getResourceAsStream("/contents_ddd.json").source().buffer().use { bufferedSource ->
@@ -105,7 +105,6 @@ class DddBackend(
         return mimeMessage
     }
 
-
     override fun sync(folderServerId: String, syncConfig: SyncConfig, listener: SyncListener) {
         listener.syncStarted(folderServerId)
         val folderData = messageStoreInfo["inbox"]
@@ -117,18 +116,18 @@ class DddBackend(
         val backendFolder = backendStorage.getFolder(folderServerId)
 
         try {
-            //TO-DO:
+            // TO-DO:
             // we might need to delete mails one at a time, after calling the saveMessage.
             // This implementation might process the same message multiple times
             val mailIdsToSync = dddAdapter.getIncomingAduIds()
-            var lastMsgServerIdProcessed = 0L;
+            var lastMsgServerIdProcessed = 0L
             for (messageServerId in mailIdsToSync) {
                 val message = loadMessage(folderServerId, messageServerId.toString())
                 backendFolder.saveMessage(message, MessageDownloadState.FULL)
                 listener.syncNewMessage(folderServerId, messageServerId.toString(), isOldMessage = false)
                 val msId = messageServerId
                 if (lastMsgServerIdProcessed < msId) {
-                    lastMsgServerIdProcessed = msId;
+                    lastMsgServerIdProcessed = msId
                 }
             }
 
@@ -140,7 +139,6 @@ class DddBackend(
             listener.syncFailed(folderServerId, "Unable to complete Inbox folder sync from the bundle client", e)
         }
     }
-
 
     override fun downloadMessage(syncConfig: SyncConfig, folderServerId: String, messageServerId: String) {
         throw UnsupportedOperationException("not implemented")

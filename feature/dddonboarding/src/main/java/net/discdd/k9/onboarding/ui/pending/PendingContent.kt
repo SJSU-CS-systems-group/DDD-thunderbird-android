@@ -15,28 +15,28 @@ import app.k9mail.core.ui.compose.designsystem.template.ResponsiveContent
 @Composable
 internal fun PendingContent(
     onRedoLoginClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier
+        modifier = modifier,
     ) {
         ResponsiveContent {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
 
             ) {
-                item{
+                item {
                     TextDisplayMedium(text = "Waiting for server response")
                     TextDisplayMedium(text = "Status = PENDING")
                 }
                 item {
                     Box(
                         modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         ButtonFilledTonal(
                             text = "Redo Login",
-                            onClick = onRedoLoginClick
+                            onClick = onRedoLoginClick,
                         )
                     }
                 }

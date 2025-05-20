@@ -5,5 +5,4 @@ package net.discdd.k9.onboarding
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
-}
+class ExampleUnitTest

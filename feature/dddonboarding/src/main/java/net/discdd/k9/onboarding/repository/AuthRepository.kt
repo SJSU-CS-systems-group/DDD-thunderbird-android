@@ -6,10 +6,10 @@ interface AuthRepository {
     enum class AuthState {
         LOGGED_IN,
         PENDING,
-        LOGGED_OUT
+        LOGGED_OUT,
     }
 
-    val CONTENT_URL: Uri;
+    val CONTENT_URL: Uri
 
     fun getState(): Pair<AuthState, net.discdd.k9.onboarding.model.AcknowledgementAdu?>
 

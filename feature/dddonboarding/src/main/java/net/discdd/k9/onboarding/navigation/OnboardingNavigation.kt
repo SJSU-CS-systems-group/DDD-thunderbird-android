@@ -10,7 +10,7 @@ fun NavGraphBuilder.dddOnboardingRoute(
 ) {
     deepLinkComposable(route = NAVIGATION_ROUTE_DDD_ONBOARDING) {
         OnboardingNavHost(
-            onFinish = onFinish
+            onFinish = onFinish,
         )
     }
 }

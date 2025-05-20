@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.discdd.k9.onboarding.ui.login.LoginContract.Event
 import net.discdd.k9.onboarding.ui.login.LoginContract.Effect
+import net.discdd.k9.onboarding.ui.login.LoginContract.Event
 
 @Composable
 fun LoginScreen(
@@ -14,7 +14,7 @@ fun LoginScreen(
     viewModel: LoginViewModel,
     onPendingState: () -> Unit,
     onFinish: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
 
