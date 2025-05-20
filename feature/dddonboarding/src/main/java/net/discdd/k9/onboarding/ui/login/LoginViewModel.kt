@@ -79,6 +79,9 @@ class LoginViewModel(
     }
 
     private fun showError(error: AccountCreatorResult.Error) {
+        viewModelScope.launch {
+            _effectFlow.emit(Effect.OnError(error))
+        }
     }
 
     private fun setEmailAddress(email: String) {

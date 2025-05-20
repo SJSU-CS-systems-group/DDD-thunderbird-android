@@ -9,7 +9,7 @@ interface AuthRepository {
         LOGGED_OUT,
     }
 
-    val CONTENT_URL: Uri
+    val contentProviderUri: Uri
 
     fun getState(): Pair<AuthState, net.discdd.k9.onboarding.model.AcknowledgementAdu?>
 

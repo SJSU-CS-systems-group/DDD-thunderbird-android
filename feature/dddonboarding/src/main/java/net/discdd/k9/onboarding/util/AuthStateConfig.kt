@@ -19,28 +19,25 @@ class AuthStateConfig(
         configFile.createNewFile()
     }
 
+    @Throws(IOException::class)
     fun writeState(state: AuthState) {
         createConfig()
-        try {
-            var os = FileOutputStream(configFile)
-            os.write(state.name.toByteArray())
-            os.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+        var os = FileOutputStream(configFile)
+        os.write(state.name.toByteArray())
+        os.close()
     }
 
     fun readState(): AuthState {
         if (!configFile.exists()) return AuthState.LOGGED_OUT
         var state: String? = configFile.readLines().firstOrNull()
 
-        when (state) {
-            "PENDING" -> return AuthState.PENDING
-            "LOGGED_IN" -> return AuthState.LOGGED_IN
-            "LOGGED_OUT" -> return AuthState.LOGGED_OUT
-        }
+        return when (state) {
+            "PENDING" -> AuthState.PENDING
+            "LOGGED_IN" -> AuthState.LOGGED_IN
+            "LOGGED_OUT" -> AuthState.LOGGED_OUT
+            else -> AuthState.LOGGED_OUT
 
-        return AuthState.LOGGED_OUT
+        }
     }
 
     fun deleteState() {

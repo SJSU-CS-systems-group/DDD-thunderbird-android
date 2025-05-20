@@ -1,5 +1,11 @@
 package net.discdd.k9.onboarding.model
 
+import net.discdd.k9.onboarding.model.AcknowledgementAdu.Companion.EMAIL_INDEX
+import net.discdd.k9.onboarding.model.AcknowledgementAdu.Companion.MESSAGE_INDEX
+import net.discdd.k9.onboarding.model.AcknowledgementAdu.Companion.PASSWORD_INDEX
+import net.discdd.k9.onboarding.model.AcknowledgementAdu.Companion.REGISTER_ACK_ADU
+import net.discdd.k9.onboarding.model.AcknowledgementAdu.Companion.SUCCESS_ACK_ADU
+
 data class RegisterAdu(
     val prefix1: String,
     val prefix2: String,
@@ -23,18 +29,23 @@ data class AcknowledgementRegisterAdu(
     companion object {
         fun toAckRegisterAdu(data: String): AcknowledgementRegisterAdu? {
             val dataArr = data.split("\n")
-            if (dataArr.size < 4 || dataArr[0] != "register-ack") return null
+            if (dataArr.size < PASSWORD_INDEX || dataArr[0] != REGISTER_ACK_ADU) return null
 
-            if (dataArr[1] == "success") {
-                return AcknowledgementRegisterAdu(
-                    email = dataArr[3],
-                    password = dataArr[4],
+            return if (dataArr[1] == SUCCESS_ACK_ADU) {
+                AcknowledgementRegisterAdu(
+                    email = dataArr[EMAIL_INDEX],
+                    password = dataArr[PASSWORD_INDEX],
                     success = true,
                     message = null,
                 )
+            } else {
+                AcknowledgementRegisterAdu(
+                    email = null,
+                    password = null,
+                    success = false,
+                    message = dataArr[MESSAGE_INDEX]
+                )
             }
-
-            return AcknowledgementRegisterAdu(email = null, password = null, success = false, message = dataArr[2])
         }
     }
 }

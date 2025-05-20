@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 val backendsModule = module {
     single {
-        val developmentBackends = get<Map<String, BackendFactory>>(named("developmentBackends"))
+        //val developmentBackends = get<Map<String, BackendFactory>>(named("developmentBackends"))
         BackendManager(
             mapOf(
                 "ddd" to get<DddBackendFactory>(),

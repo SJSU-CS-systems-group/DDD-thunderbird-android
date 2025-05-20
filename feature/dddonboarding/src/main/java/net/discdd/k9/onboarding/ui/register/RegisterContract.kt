@@ -12,26 +12,31 @@ interface RegisterContract {
         val suffix3: StringInputField = StringInputField(),
         val password: StringInputField = StringInputField(),
     ) {
+        companion object {
+            val SMALL_LETTERS = 'a'..'z'
+            val XFIX_LENGTH = 3..8
+            const val MIN_PASSWORD_LENGTH = 8
+            const val MIN_PASSWORD_CHARS = 3
+        }
         val readyToRegister
             get(): Boolean {
                 return validPrefix && validSuffix && validPassword
             }
-
         val validPrefix
             get(): Boolean {
                 val prefixString = prefix1.value
-                return prefixString.length in 3..8 && prefixString.all { it in 'a'..'z' }
+                return prefixString.length in XFIX_LENGTH && prefixString.all { it in SMALL_LETTERS }
             }
         val validSuffix
             get(): Boolean {
                 val suffixString = suffix1.value
-                return suffixString.length in 3..8 && suffixString.all { it in 'a'..'z' }
+                return suffixString.length in XFIX_LENGTH && suffixString.all { it in SMALL_LETTERS }
             }
         val validPassword
             get(): Boolean {
                 val passwordString = password.value
-                return passwordString.length >= 8 && passwordString.count { it.isDigit() } >= 1 &&
-                    passwordString.toSet().size >= 3
+                return passwordString.length >= MIN_PASSWORD_LENGTH && passwordString.count { it.isDigit() } >= 1 &&
+                    passwordString.toSet().size >= MIN_PASSWORD_CHARS
             }
     }
 

@@ -94,8 +94,7 @@ private fun LoginFooter(
 @Composable
 private fun LoginInputs(
     state: State,
-    onEvent: (Event) -> Unit,
-    modifier: Modifier = Modifier,
+    onEvent: (Event) -> Unit
 ) {
     EmailAddressInput(
         emailAddress = state.emailAddress.value,

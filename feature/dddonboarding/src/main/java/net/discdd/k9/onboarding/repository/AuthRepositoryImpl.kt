@@ -4,13 +4,13 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
+import java.io.IOException
 import java.util.logging.Level
 import java.util.logging.Logger
 import net.discdd.k9.onboarding.model.AcknowledgementRegisterAdu
-import net.discdd.k9.onboarding.model.Adu
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.util.AuthStateConfig
+import net.discdd.k9.onboarding.util.showToast
 
 class AuthRepositoryImpl(
     private val authStateConfig: AuthStateConfig,
@@ -18,27 +18,38 @@ class AuthRepositoryImpl(
 ) : AuthRepository {
     companion object {
         private val logger: Logger = Logger.getLogger(AuthRepositoryImpl::class.java.name)
+        private val RESOLVER_COLUMNS = arrayOf("data")
     }
-    private val RESOLVER_COLUMNS = arrayOf("data")
-    override val CONTENT_URL: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/messages")
+
+    override val contentProviderUri: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/messages")
 
     override fun getState(): Pair<AuthState, net.discdd.k9.onboarding.model.AcknowledgementAdu?> {
-        var state = authStateConfig.readState()
-        if (state == AuthState.PENDING) {
-            val ackAdu = getAckAdu() ?: return Pair(AuthState.PENDING, null)
-
-            if (ackAdu.success) {
-                setState(AuthState.LOGGED_IN)
-                return Pair(AuthState.LOGGED_IN, ackAdu)
+        try {
+            var state = authStateConfig.readState()
+            return when (state) {
+                AuthState.LOGGED_IN -> Pair(AuthState.LOGGED_IN, null)
+                AuthState.PENDING -> {
+                    val ackAdu = getAckAdu()
+                    if (ackAdu == null) {
+                        Pair(AuthState.PENDING, null)
+                    } else if (ackAdu.success) {
+                        setState(AuthState.LOGGED_IN)
+                        Pair(AuthState.LOGGED_IN, ackAdu)
+                    } else {
+                        authStateConfig.deleteState()
+                        Pair(AuthState.LOGGED_OUT, null)
+                    }
+                }
+                AuthState.LOGGED_OUT -> Pair(AuthState.LOGGED_OUT, null)
             }
+        } catch (e: IOException) {
+            showToast(context, e.message)
+            return Pair(AuthState.LOGGED_OUT, null)
         }
-
-        authStateConfig.deleteState()
-        return Pair(AuthState.LOGGED_OUT, null)
     }
 
     private fun getAckAdu(): net.discdd.k9.onboarding.model.AcknowledgementAdu? {
-        val cursor = context.contentResolver.query(CONTENT_URL, null, null, null, null)
+        val cursor = context.contentResolver.query(contentProviderUri, null, null, null, null)
         var ack: net.discdd.k9.onboarding.model.AcknowledgementAdu? = null
         var lastSeenAduId: String? = null
         if (cursor != null && cursor.moveToFirst()) {
@@ -57,7 +68,7 @@ class AuthRepositoryImpl(
         }
 
         if (lastSeenAduId != null) {
-            context.contentResolver.delete(CONTENT_URL, "deleteAllADUsUpto", arrayOf(lastSeenAduId))
+            context.contentResolver.delete(contentProviderUri, "deleteAllADUsUpto", arrayOf(lastSeenAduId))
         }
         return ack
     }
@@ -66,6 +77,7 @@ class AuthRepositoryImpl(
         authStateConfig.writeState(state)
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override fun insertAdu(adu: net.discdd.k9.onboarding.model.Adu): Boolean {
         val values = ContentValues().apply {
             put(RESOLVER_COLUMNS[0], adu.toByteArray())
@@ -73,15 +85,15 @@ class AuthRepositoryImpl(
 
         try {
             val resolver = context.contentResolver
-            val uri = resolver.insert(CONTENT_URL, values)
+            val uri = resolver.insert(contentProviderUri, values)
             Log.d("DDDOnboarding", "uri: " + uri)
             if (uri == null) {
-                throw Exception("Adu not inserted")
+                throw IOException("Adu not inserted")
             }
             authStateConfig.writeState(AuthState.PENDING)
             return true
         } catch (e: Exception) {
-            Toast.makeText(context, "Failed communication to DDD Client: ${e.message}", Toast.LENGTH_LONG).show()
+            showToast(context, "Failed communication to DDD Client: ${e.message}")
             logger.log(Level.SEVERE, "DDDOnboarding", "Failed to insert Adu: ${e.message}")
             return false
         }
