@@ -21,6 +21,9 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      USERNAME: github-actions
     timeout-minutes: 90
 
     steps:
