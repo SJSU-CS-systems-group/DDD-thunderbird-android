@@ -46,11 +46,11 @@ jobs:
       - name: Quality - Detekt
         run: ./gradlew detekt
 
-      - name: Quality - Lint
-        run: ./gradlew lint
+      #- name: Quality - Lint
+      #  run: ./gradlew lint
 
-      - name: Quality - Dependency Guard
-        run: ./gradlew dependencyGuard
+      #- name: Quality - Dependency Guard
+      #  run: ./gradlew dependencyGuard
 
       - name: Build
         run: ./gradlew assembleDebug

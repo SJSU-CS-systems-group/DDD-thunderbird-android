@@ -70,6 +70,11 @@ private fun Project.readSigningProperties(signingType: SigningType, isUpload: Bo
         }
     } else {
         println("Signing properties file not found: $signingPropertiesFile")
+        for (t in arrayOf(PROPERTY_STORE_FILE, PROPERTY_STORE_PASSWORD, PROPERTY_KEY_ALIAS, PROPERTY_KEY_PASSWORD)) {
+            val key = "${signingType.id}.$t"
+            rootProject.properties[key]?.let { setProperty(key, it) }
+        }
+        println("updated properties: $this")
     }
 }
 
