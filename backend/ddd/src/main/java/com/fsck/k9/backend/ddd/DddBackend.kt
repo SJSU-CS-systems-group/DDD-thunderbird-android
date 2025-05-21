@@ -2,7 +2,7 @@ package com.fsck.k9.backend.ddd
 
 import android.content.Context
 import android.util.Log
-
+import androidx.lifecycle.LifecycleOwner
 import com.fsck.k9.backend.api.Backend
 import com.fsck.k9.backend.api.BackendFolder
 import com.fsck.k9.backend.api.BackendPusher
@@ -12,6 +12,7 @@ import com.fsck.k9.backend.api.FolderInfo
 import com.fsck.k9.backend.api.SyncConfig
 import com.fsck.k9.backend.api.SyncListener
 import com.fsck.k9.backend.api.updateFolders
+import com.fsck.k9.logging.Timber.logger
 import com.fsck.k9.mail.BodyFactory
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message
@@ -30,12 +31,13 @@ import net.discdd.adapter.DDDClientAdapter
 import okio.buffer
 import okio.source
 
+@Suppress("UnusedParameter", "UnusedPrivateProperty", "TooManyFunctions")
 class DddBackend(
     context: Context,
     accountName: String,
     backendStorage: BackendStorage,
 ) : Backend {
-    private lateinit var dddAdapter : DDDClientAdapter
+    private lateinit var dddAdapter: DDDClientAdapter
     private val messageStoreInfo by lazy { readMessageStoreInfo() }
     private val backendStorage = backendStorage
 
@@ -49,16 +51,14 @@ class DddBackend(
     override val supportsFolderSubscriptions = false
     override val isPushCapable = false
 
-     init {
-         CoroutineScope(Dispatchers.Main).launch {
-             // this disgusting reflection is needed due to build problems trying to
-             // declare a dependency on androidx.lifecycle
-             val plo = "androidx.lifecycle.ProcessLifecycleOwner"
-             val lifecycleOwner = Class.forName(plo).getMethod("get").invoke(null)
-             val lifecycle = lifecycleOwner.javaClass.getField("lifecycle").get(lifecycleOwner)
-             dddAdapter = Class.forName("net.discdd.adapter.DDDClientAdapter")
-                 .constructors[0].newInstance(context, lifecycle, {}) as DDDClientAdapter
-         }
+    init {
+        CoroutineScope(Dispatchers.Main).launch {
+            val lifecycle = (context as LifecycleOwner).lifecycle
+            dddAdapter = DDDClientAdapter(
+                context,
+                lifecycle,
+            ) {}
+        }
     }
 
     override fun refreshFolderList() {
@@ -78,6 +78,7 @@ class DddBackend(
             deleteFolders(folderServerIdsToRemove)
         }
     }
+
     @OptIn(ExperimentalStdlibApi::class)
     private fun readMessageStoreInfo(): MessageStoreInfo {
         return getResourceAsStream("/contents_ddd.json").source().buffer().use { bufferedSource ->
@@ -105,7 +106,7 @@ class DddBackend(
         return mimeMessage
     }
 
-
+    @SuppressWarnings("TooGenericExceptionCaught")
     override fun sync(folderServerId: String, syncConfig: SyncConfig, listener: SyncListener) {
         listener.syncStarted(folderServerId)
         val folderData = messageStoreInfo["inbox"]
@@ -117,18 +118,18 @@ class DddBackend(
         val backendFolder = backendStorage.getFolder(folderServerId)
 
         try {
-            //TO-DO:
+            // TO-DO:
             // we might need to delete mails one at a time, after calling the saveMessage.
             // This implementation might process the same message multiple times
             val mailIdsToSync = dddAdapter.getIncomingAduIds()
-            var lastMsgServerIdProcessed = 0L;
+            var lastMsgServerIdProcessed = 0L
             for (messageServerId in mailIdsToSync) {
                 val message = loadMessage(folderServerId, messageServerId.toString())
                 backendFolder.saveMessage(message, MessageDownloadState.FULL)
                 listener.syncNewMessage(folderServerId, messageServerId.toString(), isOldMessage = false)
                 val msId = messageServerId
                 if (lastMsgServerIdProcessed < msId) {
-                    lastMsgServerIdProcessed = msId;
+                    lastMsgServerIdProcessed = msId
                 }
             }
 
@@ -136,11 +137,10 @@ class DddBackend(
             backendFolder.setMoreMessages(BackendFolder.MoreMessages.FALSE)
             listener.syncFinished(folderServerId)
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.e(e, "Unable to complete Inbox folder sync from the bundle client")
             listener.syncFailed(folderServerId, "Unable to complete Inbox folder sync from the bundle client", e)
         }
     }
-
 
     override fun downloadMessage(syncConfig: SyncConfig, folderServerId: String, messageServerId: String) {
         throw UnsupportedOperationException("not implemented")

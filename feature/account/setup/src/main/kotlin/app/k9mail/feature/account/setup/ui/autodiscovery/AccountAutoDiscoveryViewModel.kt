@@ -73,7 +73,7 @@ internal class AccountAutoDiscoveryViewModel(
             arrayOf("data"),
             "clientId",
             null,
-            null
+            null,
         )
 
         cursor?.use {
@@ -184,7 +184,9 @@ internal class AccountAutoDiscoveryViewModel(
     }
 
     private fun updateAutoDiscoverySettings(settings: AutoDiscoveryResult.Settings) {
-        if (settings.incomingServerSettings is DemoServerSettings || settings.incomingServerSettings is DDDServerSettings) {
+        if (settings.incomingServerSettings is DemoServerSettings ||
+            settings.incomingServerSettings is DDDServerSettings
+        ) {
             updateState {
                 it.copy(
                     isLoading = false,

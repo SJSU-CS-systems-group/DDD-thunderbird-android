@@ -21,7 +21,9 @@ internal class GetAutoDiscovery(
         val result = service.discover(email)
 
         return if (result is AutoDiscoveryResult.Settings) {
-            if (result.incomingServerSettings is DemoServerSettings || result.incomingServerSettings is DDDServerSettings) {
+            if (result.incomingServerSettings is DemoServerSettings ||
+                result.incomingServerSettings is DDDServerSettings
+            ) {
                 return result
             } else {
                 validateOAuthSupport(result)

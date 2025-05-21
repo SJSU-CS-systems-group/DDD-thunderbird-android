@@ -24,15 +24,14 @@ class DemoAutoDiscovery : AutoDiscovery {
                         isTrusted = true,
                         source = "DemoAutoDiscovery",
                     )
-                } else if (domain.value  == "ravlykmail.com") {
+                } else if (domain.value == "ravlykmail.com") {
                     AutoDiscoveryResult.Settings(
                         incomingServerSettings = DDDServerSettings,
                         outgoingServerSettings = DDDServerSettings,
                         isTrusted = true,
                         source = "DemoAutoDiscovery",
                     )
-                }
-                else {
+                } else {
                     AutoDiscoveryResult.NoUsableSettingsFound
                 }
             },

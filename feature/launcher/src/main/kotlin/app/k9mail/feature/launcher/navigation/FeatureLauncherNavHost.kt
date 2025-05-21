@@ -31,7 +31,7 @@ fun FeatureLauncherNavHost(
             onFinish = { accountUuid ->
                 accountSetupFinishedLauncher.launch(accountUuid)
                 activity.finish()
-            }
+            },
         )
         onboardingRoute(
             onFinish = { accountUuid ->

@@ -1,6 +1,5 @@
 package com.fsck.k9.backends
 
-import com.fsck.k9.backend.BackendFactory
 import com.fsck.k9.backend.BackendManager
 import com.fsck.k9.backend.imap.BackendIdleRefreshManager
 import com.fsck.k9.backend.imap.SystemAlarmManager
@@ -11,7 +10,7 @@ import org.koin.dsl.module
 
 val backendsModule = module {
     single {
-        val developmentBackends = get<Map<String, BackendFactory>>(named("developmentBackends"))
+        // val developmentBackends = get<Map<String, BackendFactory>>(named("developmentBackends"))
         BackendManager(
             mapOf(
                 "ddd" to get<DddBackendFactory>(),

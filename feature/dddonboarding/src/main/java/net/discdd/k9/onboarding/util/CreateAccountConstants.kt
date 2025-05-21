@@ -11,6 +11,7 @@ import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.folders.FolderServerId
 import com.fsck.k9.mail.folders.RemoteFolder
 
+@Suppress("MagicNumber")
 object CreateAccountConstants {
     val INCOMING_SERVER_SETTINGS = ServerSettings(
         "ddd",

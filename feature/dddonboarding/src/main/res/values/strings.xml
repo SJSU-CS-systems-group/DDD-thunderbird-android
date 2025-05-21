@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">DDDOnboardingApplication</string>
+    <string name="prefix_must_be_between_3_and_8_letters">Prefix must be between 3 and 8 letters from a to z.</string>
+    <string name="password_requirements">Password must be at least 8 characters and contain at least 3 different letters and 1 digit</string>
+    <string name="suffix_must_be_between_3_and_8_letters">Suffix must be between 3 and 8 letters from a to z.</string>
+    <string name="email_address_formation">Your email address with be the chosen prefix and suffix with some random numbers and letters in between.</string>
 </resources>

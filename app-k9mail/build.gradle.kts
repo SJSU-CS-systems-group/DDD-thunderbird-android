@@ -45,7 +45,6 @@ android {
         versionCode = 39004
         versionName = "6.905-SNAPSHOT"
 
-
         minSdk = 33
 
         // Keep in sync with the resource string array "supported_languages"
@@ -138,7 +137,6 @@ android {
         }
 
         debug {
-            applicationIdSuffix = ".debug"
             enableUnitTestCoverage = testCoverageEnabled
             enableAndroidTestCoverage = testCoverageEnabled
 

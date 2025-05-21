@@ -10,10 +10,10 @@ import app.k9mail.provider.K9AppNameProvider
 import app.k9mail.provider.K9FeatureThemeProvider
 import app.k9mail.widget.appWidgetModule
 import com.fsck.k9.AppConfig
-import net.discdd.k9.BuildConfig
 import com.fsck.k9.activity.MessageCompose
 import com.fsck.k9.provider.UnreadWidgetProvider
 import com.fsck.k9.widget.list.MessageListWidgetProvider
+import net.discdd.k9.BuildConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
