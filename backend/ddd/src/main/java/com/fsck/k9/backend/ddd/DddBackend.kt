@@ -12,6 +12,7 @@ import com.fsck.k9.backend.api.FolderInfo
 import com.fsck.k9.backend.api.SyncConfig
 import com.fsck.k9.backend.api.SyncListener
 import com.fsck.k9.backend.api.updateFolders
+import com.fsck.k9.logging.Timber.logger
 import com.fsck.k9.mail.BodyFactory
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.Message
@@ -30,6 +31,7 @@ import net.discdd.adapter.DDDClientAdapter
 import okio.buffer
 import okio.source
 
+@Suppress("UnusedParameter", "UnusedPrivateProperty", "TooManyFunctions")
 class DddBackend(
     context: Context,
     accountName: String,
@@ -104,6 +106,7 @@ class DddBackend(
         return mimeMessage
     }
 
+    @SuppressWarnings("TooGenericExceptionCaught")
     override fun sync(folderServerId: String, syncConfig: SyncConfig, listener: SyncListener) {
         listener.syncStarted(folderServerId)
         val folderData = messageStoreInfo["inbox"]
@@ -134,7 +137,7 @@ class DddBackend(
             backendFolder.setMoreMessages(BackendFolder.MoreMessages.FALSE)
             listener.syncFinished(folderServerId)
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.e(e, "Unable to complete Inbox folder sync from the bundle client")
             listener.syncFailed(folderServerId, "Unable to complete Inbox folder sync from the bundle client", e)
         }
     }
