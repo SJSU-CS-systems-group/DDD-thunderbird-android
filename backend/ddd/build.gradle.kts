@@ -13,7 +13,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.moshi)
     implementation(libs.client.adapter)
-    //implementation(libs.androidx.lifecycle.process)
     ksp(libs.moshi.kotlin.codegen)
 
     api(projects.backend.api)
