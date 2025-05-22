@@ -16,6 +16,10 @@ jobs:
   build-and-release:
     runs-on: SJSU-office
     environment: Android Release
+    env:
+       TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       USERNAME: github-actions
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
