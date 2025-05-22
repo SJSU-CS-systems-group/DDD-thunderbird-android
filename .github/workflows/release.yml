@@ -51,6 +51,7 @@ jobs:
           KEYFILE=${PWD}/signing-key.jks
           echo "${{ secrets.DDD_KEYFILE }}" | base64 -d > $KEYFILE
           echo "populated $KEYFILE"
+          keytool -list -keystore $KEYFILE -storepass $DDD_KEYFILE_PASSWORD
           ./gradlew clean :app-k9mail:bundleRelease :app-k9mail:assembleRelease  \
               -Pk9.release.storeFile=$KEYFILE \
               -Pk9.release.storePassword=$DDD_KEYFILE_PASSWORD \
