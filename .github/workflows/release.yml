@@ -2,10 +2,11 @@ name: Android Release
 
 on:
   push:
+    branches:
+      - main
     paths:
       - app-k9/build.gradle.kts
-    branches:
-      - main  # or 'release' if that's your release branch
+      - .github/workflows/release.yml
 
 jobs:
   build-and-release:
