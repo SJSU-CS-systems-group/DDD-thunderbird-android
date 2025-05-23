@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - app-k9/build.gradle.kts
+      - app-k9mail/build.gradle.kts
       - .github/workflows/release.yml
 
 jobs:
