@@ -17,7 +17,6 @@ import app.k9mail.core.ui.compose.designsystem.atom.Surface
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonFilledTonal
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonText
 import app.k9mail.core.ui.compose.designsystem.atom.text.TextDisplayMedium
-import app.k9mail.core.ui.compose.designsystem.atom.text.TextDisplaySmall
 import app.k9mail.core.ui.compose.designsystem.atom.textfield.TextFieldOutlined
 import app.k9mail.core.ui.compose.designsystem.molecule.input.PasswordInput
 import app.k9mail.core.ui.compose.designsystem.template.LazyColumnWithHeaderFooter
@@ -122,7 +121,6 @@ private fun RegisterInputs(
             Text(
                 text = stringResource(R.string.prefix_must_be_between_3_and_8_letters),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Center,
             )
         }
 
@@ -133,10 +131,9 @@ private fun RegisterInputs(
         )
 
         if (!state.validSuffix) {
-            TextDisplaySmall(
+            Text(
                 text = stringResource(R.string.suffix_must_be_between_3_and_8_letters),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Center,
             )
         }
 
@@ -146,10 +143,9 @@ private fun RegisterInputs(
             label = "Suffix",
         )
         if (!state.validPassword) {
-            TextDisplaySmall(
+            Text(
                 text = stringResource(R.string.password_requirements),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Center,
             )
         }
         PasswordInput(password = state.password.value, onPasswordChange = { onEvent(Event.PasswordChanged(it)) })
