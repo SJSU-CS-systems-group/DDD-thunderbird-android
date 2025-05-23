@@ -122,7 +122,7 @@ private fun RegisterInputs(
             Text(
                 text = stringResource(R.string.prefix_must_be_between_3_and_8_letters),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Left,
             )
         }
 
@@ -133,10 +133,10 @@ private fun RegisterInputs(
         )
 
         if (!state.validSuffix) {
-            TextDisplaySmall(
+            Text(
                 text = stringResource(R.string.suffix_must_be_between_3_and_8_letters),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Left,
             )
         }
 
@@ -146,10 +146,10 @@ private fun RegisterInputs(
             label = "Suffix",
         )
         if (!state.validPassword) {
-            TextDisplaySmall(
+            Text(
                 text = stringResource(R.string.password_requirements),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Left,
             )
         }
         PasswordInput(password = state.password.value, onPasswordChange = { onEvent(Event.PasswordChanged(it)) })
