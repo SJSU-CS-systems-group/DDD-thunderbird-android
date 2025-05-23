@@ -121,7 +121,6 @@ private fun RegisterInputs(
             Text(
                 text = stringResource(R.string.prefix_must_be_between_3_and_8_letters),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Start,
             )
         }
 
@@ -135,7 +134,6 @@ private fun RegisterInputs(
             Text(
                 text = stringResource(R.string.suffix_must_be_between_3_and_8_letters),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Left,
             )
         }
 
@@ -148,7 +146,6 @@ private fun RegisterInputs(
             Text(
                 text = stringResource(R.string.password_requirements),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Left,
             )
         }
         PasswordInput(password = state.password.value, onPasswordChange = { onEvent(Event.PasswordChanged(it)) })
