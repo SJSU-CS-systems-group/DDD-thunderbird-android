@@ -42,8 +42,8 @@ android {
         applicationId = "net.discdd.k9"
         testApplicationId = "net.discdd.k9.tests"
 
-        versionCode = 39005
-        versionName = "6.905-DDD"
+        versionCode = 39006
+        versionName = "6.905-DDD-alpha1"
 
         minSdk = 33
 
