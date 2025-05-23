@@ -3,7 +3,7 @@ name: Update Gradle build cache
 on:
   push:
     branches:
-      - main
+      - main-disable
     paths-ignore:
       - '.idea/**'
       - '.gitattributes'
