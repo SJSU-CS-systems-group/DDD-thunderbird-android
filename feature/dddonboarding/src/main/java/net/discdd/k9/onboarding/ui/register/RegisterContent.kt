@@ -121,7 +121,7 @@ private fun RegisterInputs(
             Text(
                 text = stringResource(R.string.prefix_must_be_between_3_and_8_letters),
                 color = MainTheme.colors.error,
-                textAlign = TextAlign.Left,
+                textAlign = TextAlign.Start,
             )
         }
 
