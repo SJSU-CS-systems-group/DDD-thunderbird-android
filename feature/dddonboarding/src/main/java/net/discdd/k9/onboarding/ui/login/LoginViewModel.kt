@@ -43,20 +43,20 @@ class LoginViewModel(
     }
 
     private fun checkAuthState() {
-        val (state, ackAdu) = authRepository.getState()
+        val (state, id) = authRepository.getState()
         if (state == AuthState.PENDING) {
             Log.d("LoginViewModel", "state " + state)
             navigatePending()
-        } else if (state == AuthState.LOGGED_IN && ackAdu != null) {
-            createAccount(ackAdu)
+        } else if (state == AuthState.LOGGED_IN && id != null) {
+            createAccount(id)
         } else if (state == AuthState.LOGGED_OUT) {
-            // TODO
+            navigateLogin()
         }
     }
 
-    private fun createAccount(ackAdu: net.discdd.k9.onboarding.model.AcknowledgementAdu) {
+    private fun createAccount(id: String) {
         val accountState = AccountState(
-            emailAddress = ackAdu.email,
+            emailAddress = id,
             incomingServerSettings = CreateAccountConstants.INCOMING_SERVER_SETTINGS,
             outgoingServerSettings = CreateAccountConstants.OUTGOING_SERVER_SETTINGS,
             specialFolderSettings = CreateAccountConstants.SPECIAL_FOLDER_SETTINGS,
@@ -67,7 +67,7 @@ class LoginViewModel(
         viewModelScope.launch {
             when (val result = createAccount.execute(accountState)) {
                 is AccountCreatorResult.Success -> showSuccess(AccountUuid(result.accountUuid))
-                is AccountCreatorResult.Error -> showError(result)
+                is AccountCreatorResult.Error -> showError(Error(result.message))
             }
         }
     }
@@ -78,7 +78,7 @@ class LoginViewModel(
         }
     }
 
-    private fun showError(error: AccountCreatorResult.Error) {
+    private fun showError(error: Error) {
         viewModelScope.launch {
             _effectFlow.emit(Effect.OnError(error))
         }
@@ -110,6 +110,14 @@ class LoginViewModel(
         viewModelScope.coroutineContext.cancelChildren()
         viewModelScope.launch {
             _effectFlow.emit(Effect.OnPendingState)
+        }
+    }
+
+    private fun navigateLogin() {
+        Log.d("k9", "navigate login")
+        viewModelScope.coroutineContext.cancelChildren()
+        viewModelScope.launch {
+            _effectFlow.emit(Effect.OnError(Error("Login failed, please try again.")))
         }
     }
 
