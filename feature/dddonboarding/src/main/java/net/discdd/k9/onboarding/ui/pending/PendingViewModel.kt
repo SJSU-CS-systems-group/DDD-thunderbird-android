@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.ui.pending.PendingContract.Effect
-import net.discdd.k9.onboarding.ui.pending.PendingContract.Event
 
 class PendingViewModel(
     private val authRepository: AuthRepository,

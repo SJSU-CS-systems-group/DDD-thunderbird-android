@@ -34,7 +34,7 @@ class AuthRepositoryImpl(
                         authStateConfig.writeState(AuthState.PENDING)
                         Pair(AuthState.PENDING, null)
                     } else if (ackAdu.success) {
-                        logger.log(Level.INFO, "Acknowledgement received: ${ackAdu}")
+                        logger.log(Level.INFO, "Acknowledgement received: $ackAdu")
                         authStateConfig.writeState(AuthState.LOGGED_IN, ackAdu.email)
                         Pair(AuthState.LOGGED_IN, ackAdu.email)
                     } else {

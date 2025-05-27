@@ -55,7 +55,7 @@ class DddBackend(
         CoroutineScope(Dispatchers.Main).launch {
             dddAdapter = DDDClientAdapter(
                 context,
-                ProcessLifecycleOwner.get().lifecycle
+                ProcessLifecycleOwner.get().lifecycle,
             ) {}
         }
     }

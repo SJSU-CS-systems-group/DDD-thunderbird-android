@@ -35,13 +35,12 @@ internal fun PendingContent(
                     Log.d("DDDOnboarding", "refreshing")
                     viewModel.checkState()
                 },
-                isRefreshing = refreshing.value
+                isRefreshing = refreshing.value,
             ) {
-
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
 
-                    ) {
+                ) {
                     item {
                         TextDisplayMedium(text = "Waiting for server response")
                         TextDisplayMedium(text = "Status = PENDING")
