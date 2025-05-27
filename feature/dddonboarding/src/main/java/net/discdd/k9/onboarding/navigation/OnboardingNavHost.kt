@@ -9,7 +9,6 @@ import androidx.navigation.compose.rememberNavController
 import net.discdd.k9.onboarding.ui.login.LoginScreen
 import net.discdd.k9.onboarding.ui.login.LoginViewModel
 import net.discdd.k9.onboarding.ui.pending.PendingScreen
-import net.discdd.k9.onboarding.ui.pending.PendingViewModel
 import net.discdd.k9.onboarding.ui.register.RegisterScreen
 import net.discdd.k9.onboarding.ui.register.RegisterViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -59,7 +58,7 @@ fun OnboardingNavHost(
         }
         composable(route = NESTED_NAVIGATION_ROUTE_PENDING) {
             PendingScreen(
-                refreshState = { navController.navigateToLogin() }
+                refreshState = { navController.navigateToLogin() },
             )
         }
     }

@@ -42,7 +42,7 @@ internal fun PendingContent(
                     item {
                         TextDisplaySmall(
                             text = "Waiting for server response",
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
                         Text(text = "Please use the DDD Client to exchange data with DDD transports")
                     }
@@ -53,7 +53,7 @@ internal fun PendingContent(
                         ) {
                             ButtonFilledTonal(
                                 text = "Abort Login",
-                                onClick = { abortLogin() }
+                                onClick = { abortLogin() },
                             )
                         }
                     }

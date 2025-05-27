@@ -12,7 +12,7 @@ fun PendingScreen(
     refreshState: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel =  koinViewModel<PendingViewModel>()
+    val viewModel = koinViewModel<PendingViewModel>()
 
     LaunchedEffect(viewModel.effectFlow) {
         viewModel.effectFlow.collect { effect ->
