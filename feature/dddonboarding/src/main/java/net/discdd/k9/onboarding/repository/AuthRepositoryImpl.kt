@@ -54,6 +54,7 @@ class AuthRepositoryImpl(
         authStateConfig.writeState(AuthState.LOGGED_OUT)
     }
 
+    @Suppress("NestedBlockDepth")
     private fun getAckAdu(): net.discdd.k9.onboarding.model.AcknowledgementAdu? {
         context.contentResolver.query(contentProviderUri, null, null, null, null)?.use { cursor ->
             var ack: net.discdd.k9.onboarding.model.AcknowledgementAdu? = null

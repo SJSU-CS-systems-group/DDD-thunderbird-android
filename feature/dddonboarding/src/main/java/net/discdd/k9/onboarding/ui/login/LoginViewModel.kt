@@ -23,6 +23,7 @@ import net.discdd.k9.onboarding.ui.login.LoginContract.Event
 import net.discdd.k9.onboarding.ui.login.LoginContract.State
 import net.discdd.k9.onboarding.util.CreateAccountConstants
 
+@Suppress("TooManyFunctions")
 class LoginViewModel(
     initialState: State = State(),
     private val createAccount: CreateAccount,
