@@ -59,8 +59,7 @@ fun OnboardingNavHost(
         }
         composable(route = NESTED_NAVIGATION_ROUTE_PENDING) {
             PendingScreen(
-                viewModel = koinViewModel<PendingViewModel>(),
-                onRedoLoginState = { navController.navigateToLogin() },
+                refreshState = { navController.navigateToLogin() }
             )
         }
     }
