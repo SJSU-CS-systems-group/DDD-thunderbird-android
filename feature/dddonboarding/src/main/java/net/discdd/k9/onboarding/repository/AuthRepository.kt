@@ -11,8 +11,9 @@ interface AuthRepository {
 
     val contentProviderUri: Uri
 
-    fun getState(): Pair<AuthState, net.discdd.k9.onboarding.model.AcknowledgementAdu?>
+    fun getState(): Pair<AuthState, String?>
 
-    fun setState(state: AuthState)
+    fun logout()
+    fun getId(): String?
     fun insertAdu(adu: net.discdd.k9.onboarding.model.Adu): Boolean
 }

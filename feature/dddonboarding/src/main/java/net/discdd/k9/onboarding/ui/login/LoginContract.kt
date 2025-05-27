@@ -1,7 +1,6 @@
 package net.discdd.k9.onboarding.ui.login
 
 import app.k9mail.feature.account.common.domain.input.StringInputField
-import app.k9mail.feature.account.setup.AccountSetupExternalContract.AccountCreator.AccountCreatorResult.Error
 import app.k9mail.feature.account.setup.domain.entity.AccountUuid
 
 interface LoginContract {
@@ -22,6 +21,6 @@ interface LoginContract {
     sealed interface Effect {
         data object OnPendingState : Effect
         data class OnLoggedInState(val accountUuid: AccountUuid) : Effect
-        data class OnError(val error: Error) : LoginContract.Effect
+        data class OnError(val error: kotlin.Error) : LoginContract.Effect
     }
 }

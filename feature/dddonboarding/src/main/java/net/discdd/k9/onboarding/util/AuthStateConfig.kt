@@ -12,30 +12,23 @@ class AuthStateConfig(
     private val dddDir: File = context.filesDir.resolve("ddd"),
     private val configFile: File = dddDir.resolve("auth.state"),
 ) {
-    private fun createConfig() {
-        if (!dddDir.exists()) {
-            dddDir.mkdirs()
-        }
-        configFile.createNewFile()
-    }
-
     @Throws(IOException::class)
-    fun writeState(state: AuthState) {
-        createConfig()
-        var os = FileOutputStream(configFile)
-        os.write(state.name.toByteArray())
-        os.close()
+    fun writeState(state: AuthState, id: String? = null) {
+        if (!dddDir.exists()) dddDir.mkdirs()
+        FileOutputStream(configFile).use { os ->
+            os.write("${state.name}\n${id ?: ""}".toByteArray())
+        }
     }
 
-    fun readState(): AuthState {
-        if (!configFile.exists()) return AuthState.LOGGED_OUT
-        var state: String? = configFile.readLines().firstOrNull()
+    fun readState(): Pair<AuthState, String?> {
+        if (!configFile.exists()) return Pair(AuthState.LOGGED_OUT, null)
+        val stateAndId = configFile.readLines()
 
-        return when (state) {
-            "PENDING" -> AuthState.PENDING
-            "LOGGED_IN" -> AuthState.LOGGED_IN
-            "LOGGED_OUT" -> AuthState.LOGGED_OUT
-            else -> AuthState.LOGGED_OUT
+        return when (stateAndId[0]) {
+            "PENDING" -> Pair(AuthState.PENDING, null)
+            "LOGGED_IN" -> Pair(AuthState.LOGGED_IN, stateAndId[1])
+            "LOGGED_OUT" -> Pair(AuthState.LOGGED_OUT, null)
+            else -> Pair(AuthState.LOGGED_OUT, null)
         }
     }
 

@@ -23,24 +23,26 @@ class AuthRepositoryImpl(
 
     override val contentProviderUri: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/messages")
 
-    override fun getState(): Pair<AuthState, net.discdd.k9.onboarding.model.AcknowledgementAdu?> {
+    override fun getState(): Pair<AuthState, String?> {
         try {
-            var state = authStateConfig.readState()
-            return when (state) {
-                AuthState.LOGGED_IN -> Pair(AuthState.LOGGED_IN, null)
+            val stateAndId = authStateConfig.readState()
+            return when (stateAndId.first) {
+                AuthState.LOGGED_IN -> stateAndId
                 AuthState.PENDING -> {
                     val ackAdu = getAckAdu()
                     if (ackAdu == null) {
+                        authStateConfig.writeState(AuthState.PENDING)
                         Pair(AuthState.PENDING, null)
                     } else if (ackAdu.success) {
-                        setState(AuthState.LOGGED_IN)
-                        Pair(AuthState.LOGGED_IN, ackAdu)
+                        logger.log(Level.INFO, "Acknowledgement received: $ackAdu")
+                        authStateConfig.writeState(AuthState.LOGGED_IN, ackAdu.email)
+                        Pair(AuthState.LOGGED_IN, ackAdu.email)
                     } else {
-                        authStateConfig.deleteState()
+                        authStateConfig.writeState(AuthState.LOGGED_OUT)
                         Pair(AuthState.LOGGED_OUT, null)
                     }
                 }
-                AuthState.LOGGED_OUT -> Pair(AuthState.LOGGED_OUT, null)
+                AuthState.LOGGED_OUT -> stateAndId
             }
         } catch (e: IOException) {
             showToast(context, e.message)
@@ -48,33 +50,39 @@ class AuthRepositoryImpl(
         }
     }
 
-    private fun getAckAdu(): net.discdd.k9.onboarding.model.AcknowledgementAdu? {
-        val cursor = context.contentResolver.query(contentProviderUri, null, null, null, null)
-        var ack: net.discdd.k9.onboarding.model.AcknowledgementAdu? = null
-        var lastSeenAduId: String? = null
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                var data = cursor.getString(cursor.getColumnIndexOrThrow("data"))
-                var id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
-                lastSeenAduId = id
-                Log.d("k9", "adu id: $id")
-                // delete adu if exists
-                if (data.startsWith("login-ack")) {
-                    ack = net.discdd.k9.onboarding.model.AcknowledgementLoginAdu.toAckLoginAdu(data)
-                } else if (data.startsWith("register-ack")) {
-                    ack = AcknowledgementRegisterAdu.toAckRegisterAdu(data)
-                }
-            } while (ack == null && cursor.moveToNext())
-        }
-
-        if (lastSeenAduId != null) {
-            context.contentResolver.delete(contentProviderUri, "deleteAllADUsUpto", arrayOf(lastSeenAduId))
-        }
-        return ack
+    override fun logout() {
+        authStateConfig.writeState(AuthState.LOGGED_OUT)
     }
 
-    override fun setState(state: AuthState) {
-        authStateConfig.writeState(state)
+    @Suppress("NestedBlockDepth")
+    private fun getAckAdu(): net.discdd.k9.onboarding.model.AcknowledgementAdu? {
+        context.contentResolver.query(contentProviderUri, null, null, null, null)?.use { cursor ->
+            var ack: net.discdd.k9.onboarding.model.AcknowledgementAdu? = null
+            var lastSeenAduId: String? = null
+            if (cursor.moveToFirst()) {
+                do {
+                    val data = cursor.getString(cursor.getColumnIndexOrThrow("data"))
+                    val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
+                    lastSeenAduId = id
+                    Log.d("k9", "adu id: $id => $data")
+                    // delete adu if exists
+                    if (data.startsWith("login-ack")) {
+                        ack = net.discdd.k9.onboarding.model.AcknowledgementLoginAdu.toAckLoginAdu(data)
+                    } else if (data.startsWith("register-ack")) {
+                        ack = AcknowledgementRegisterAdu.toAckRegisterAdu(data)
+                    }
+                } while (ack == null && cursor.moveToNext())
+            }
+            if (lastSeenAduId != null) {
+                context.contentResolver.delete(contentProviderUri, "deleteAllADUsUpto", arrayOf(lastSeenAduId))
+            }
+            return ack
+        }
+        return null
+    }
+
+    override fun getId(): String? {
+        return authStateConfig.readState().second
     }
 
     @Suppress("TooGenericExceptionCaught")

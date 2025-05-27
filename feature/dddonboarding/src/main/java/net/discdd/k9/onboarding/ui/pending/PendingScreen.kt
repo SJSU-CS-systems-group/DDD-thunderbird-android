@@ -5,30 +5,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import net.discdd.k9.onboarding.ui.pending.PendingContract.Effect
-import net.discdd.k9.onboarding.ui.pending.PendingContract.Event
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PendingScreen(
-    onRedoLoginState: () -> Unit,
-    viewModel: PendingViewModel,
+    refreshState: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.event(Event.CheckAuthState)
-    }
+    val viewModel = koinViewModel<PendingViewModel>()
 
     LaunchedEffect(viewModel.effectFlow) {
         viewModel.effectFlow.collect { effect ->
             Log.d("k9", "in effect: $effect")
             when (effect) {
-                Effect.OnRedoLoginState -> onRedoLoginState()
+                Effect.OnRedoLoginState -> refreshState()
             }
         }
     }
 
     Log.d("DDDOnboarding", "In pending")
     PendingContent(
-        onRedoLoginClick = { viewModel.event(Event.OnRedoLoginClick) },
+        refreshState = { viewModel.checkState() },
+        abortLogin = { viewModel.redoLogin() },
         modifier = modifier,
     )
 }

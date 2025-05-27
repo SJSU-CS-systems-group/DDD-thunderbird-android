@@ -2,7 +2,7 @@ package com.fsck.k9.backend.ddd
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.fsck.k9.backend.api.Backend
 import com.fsck.k9.backend.api.BackendFolder
 import com.fsck.k9.backend.api.BackendPusher
@@ -53,10 +53,9 @@ class DddBackend(
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
-            val lifecycle = (context as LifecycleOwner).lifecycle
             dddAdapter = DDDClientAdapter(
                 context,
-                lifecycle,
+                ProcessLifecycleOwner.get().lifecycle,
             ) {}
         }
     }
