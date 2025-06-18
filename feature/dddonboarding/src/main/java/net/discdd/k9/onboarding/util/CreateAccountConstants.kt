@@ -35,12 +35,6 @@ object CreateAccountConstants {
         null,
     )
 
-    val DISPLAY_OPTIONS = AccountDisplayOptions(
-        accountName = "accountName",
-        displayName = "displayName",
-        emailSignature = "emailSignature",
-    )
-
     val SYNC_OPTIONS = AccountSyncOptions(
         checkFrequencyInMinutes = 10,
         messageDisplayCount = 20,
