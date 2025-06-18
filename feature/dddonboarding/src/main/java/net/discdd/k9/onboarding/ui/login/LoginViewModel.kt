@@ -3,6 +3,7 @@ package net.discdd.k9.onboarding.ui.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.k9mail.feature.account.common.domain.entity.AccountDisplayOptions
 import app.k9mail.feature.account.common.domain.entity.AccountState
 import app.k9mail.feature.account.setup.AccountSetupExternalContract.AccountCreator.AccountCreatorResult
 import app.k9mail.feature.account.setup.domain.entity.AccountUuid
@@ -56,13 +57,22 @@ class LoginViewModel(
     }
 
     private fun createAccount(id: String) {
+        val username = id.substringBefore("@")
+        val pattern = "^([a-zA-Z]+)(\\d+[a-zA-Z]*\\d+)([a-zA-Z]+)$".toRegex()
+        val matches = pattern.find(username)
+        val prefix = matches?.groups?.get(1)?.value ?: username
+        val suffix = matches?.groups?.get(3)?.value ?: ""
         val accountState = AccountState(
             emailAddress = id,
             incomingServerSettings = CreateAccountConstants.INCOMING_SERVER_SETTINGS,
             outgoingServerSettings = CreateAccountConstants.OUTGOING_SERVER_SETTINGS,
             specialFolderSettings = CreateAccountConstants.SPECIAL_FOLDER_SETTINGS,
-            displayOptions = CreateAccountConstants.DISPLAY_OPTIONS,
             syncOptions = CreateAccountConstants.SYNC_OPTIONS,
+            displayOptions =  AccountDisplayOptions(
+                accountName = "DiscDD",
+                displayName = "$prefix $suffix",
+                emailSignature = "-- from a disconnected device: discdd.net --"
+            )
         )
 
         viewModelScope.launch {

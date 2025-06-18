@@ -56,7 +56,7 @@ class AuthRepositoryImpl(
 
     @Suppress("NestedBlockDepth")
     private fun getAckAdu(): net.discdd.k9.onboarding.model.AcknowledgementAdu? {
-        context.contentResolver.query(contentProviderUri, null, null, null, null)?.use { cursor ->
+        return context.contentResolver.query(contentProviderUri, null, null, null, null)?.use { cursor ->
             var ack: net.discdd.k9.onboarding.model.AcknowledgementAdu? = null
             var lastSeenAduId: String? = null
             if (cursor.moveToFirst()) {
@@ -76,9 +76,8 @@ class AuthRepositoryImpl(
             if (lastSeenAduId != null) {
                 context.contentResolver.delete(contentProviderUri, "deleteAllADUsUpto", arrayOf(lastSeenAduId))
             }
-            return ack
+            ack
         }
-        return null
     }
 
     override fun getId(): String? {
