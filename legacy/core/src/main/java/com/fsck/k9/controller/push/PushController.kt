@@ -165,9 +165,9 @@ class PushController internal constructor(
         val shouldDisablePushAccounts = backgroundSyncDisabledViaSystem ||
             backgroundSyncDisabledInApp ||
             false
-            // TODO: DDD we need to relax this logic! DDD doesn't need alarmPermission or networAvailable
-            //networkNotAvailable ||
-            //alarmPermissionMissing
+        // TODO: DDD we need to relax this logic! DDD doesn't need alarmPermission or networAvailable
+        // networkNotAvailable ||
+        // alarmPermissionMissing
 
         val pushAccounts = if (shouldDisablePushAccounts) {
             emptyList()

@@ -48,14 +48,14 @@ class DddBackend(
     override val supportsSearchByDate = false
     override val supportsFolderSubscriptions = false
     override val isPushCapable = true
+
     // to know if we should register when the backend is created
     private var dddAdapterShouldRegisterForAduAdditions = false
-
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
             dddAdapter = DDDClientAdapter(
-                context
+                context,
             ) {
                 logger.i("Notified of new ADU addition")
                 val folderServerId = backendStorage.getFolderServerIds().firstOrNull()
@@ -259,6 +259,7 @@ class DddBackend(
                 }
             }
 
+            @Suppress("EmptyFunctionBlock")
             override fun updateFolders(folderServerIds: Collection<String>) {
             }
 
@@ -270,6 +271,7 @@ class DddBackend(
                 }
             }
 
+            @Suppress("EmptyFunctionBlock")
             override fun reconnect() {
             }
         }
