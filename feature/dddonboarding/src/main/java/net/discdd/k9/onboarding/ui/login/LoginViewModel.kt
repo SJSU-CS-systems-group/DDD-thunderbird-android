@@ -61,6 +61,8 @@ class LoginViewModel(
         val pattern = "^([a-zA-Z]+)(\\d+[a-zA-Z]*\\d+)([a-zA-Z]+)$".toRegex()
         val matches = pattern.find(username)
         val prefix = matches?.groups?.get(1)?.value ?: username
+
+        @Suppress("MagicNumber")
         val suffix = matches?.groups?.get(3)?.value ?: ""
         val accountState = AccountState(
             emailAddress = id,
@@ -68,11 +70,11 @@ class LoginViewModel(
             outgoingServerSettings = CreateAccountConstants.OUTGOING_SERVER_SETTINGS,
             specialFolderSettings = CreateAccountConstants.SPECIAL_FOLDER_SETTINGS,
             syncOptions = CreateAccountConstants.SYNC_OPTIONS,
-            displayOptions =  AccountDisplayOptions(
+            displayOptions = AccountDisplayOptions(
                 accountName = "DiscDD",
                 displayName = "$prefix $suffix",
-                emailSignature = "-- from a disconnected device: discdd.net --"
-            )
+                emailSignature = "-- from a disconnected device: discdd.net --",
+            ),
         )
 
         viewModelScope.launch {
