@@ -2,7 +2,7 @@ package app.k9mail.provider
 
 import android.content.Context
 import app.k9mail.core.common.provider.AppNameProvider
-import net.discdd.k9.R
+import net.discdd.mail.R
 
 class K9AppNameProvider(
     context: Context,

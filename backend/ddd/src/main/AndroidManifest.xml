@@ -2,13 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
-    <uses-permission
-        android:name="net.discdd.bundleclient.permission.MESSAGE_PROVIDER_READ"
-        android:protectionLevel="normal" />
-    <uses-permission
-        android:name="net.discdd.bundleclient.permission.MESSAGE_PROVIDER_WRITE"
-        android:protectionLevel="normal" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <queries>
         <provider android:authorities="net.discdd.provider.datastoreprovider" />

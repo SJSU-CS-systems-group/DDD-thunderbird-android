@@ -36,14 +36,14 @@ dependencies {
 }
 
 android {
-    namespace = "net.discdd.k9"
+    namespace = "net.discdd.mail"
 
     defaultConfig {
-        applicationId = "net.discdd.k9"
-        testApplicationId = "net.discdd.k9.tests"
+        applicationId = "net.discdd.mail"
+        testApplicationId = "net.discdd.mail.tests"
 
-        versionCode = 39007
-        versionName = "6.905-DDD-alpha2"
+        versionCode = 39008
+        versionName = "6.905-DDD-alpha3"
 
         minSdk = 33
 
