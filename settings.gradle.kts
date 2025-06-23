@@ -2,6 +2,7 @@ import java.util.Properties
 
 pluginManagement {
     repositories {
+        mavenLocal()
         includeBuild("build-plugin")
         gradlePluginPortal()
         google()
@@ -12,6 +13,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
         maven(url = "https://jitpack.io")

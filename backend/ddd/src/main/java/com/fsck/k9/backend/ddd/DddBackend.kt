@@ -2,7 +2,6 @@ package com.fsck.k9.backend.ddd
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.fsck.k9.backend.api.Backend
 import com.fsck.k9.backend.api.BackendFolder
 import com.fsck.k9.backend.api.BackendPusher
@@ -23,7 +22,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
-import java.util.UUID
+import java.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,11 +34,10 @@ import okio.source
 class DddBackend(
     context: Context,
     accountName: String,
-    backendStorage: BackendStorage,
+    private val backendStorage: BackendStorage,
 ) : Backend {
     private lateinit var dddAdapter: DDDClientAdapter
     private val messageStoreInfo by lazy { readMessageStoreInfo() }
-    private val backendStorage = backendStorage
 
     override val supportsFlags = false
     override val supportsExpunge = false
@@ -49,14 +47,23 @@ class DddBackend(
     override val supportsTrashFolder = false
     override val supportsSearchByDate = false
     override val supportsFolderSubscriptions = false
-    override val isPushCapable = false
+    override val isPushCapable = true
+
+    // to know if we should register when the backend is created
+    private var dddAdapterShouldRegisterForAduAdditions = false
 
     init {
         CoroutineScope(Dispatchers.Main).launch {
             dddAdapter = DDDClientAdapter(
                 context,
-                ProcessLifecycleOwner.get().lifecycle,
-            ) {}
+            ) {
+                logger.i("Notified of new ADU addition")
+                val folderServerId = backendStorage.getFolderServerIds().firstOrNull()
+                callback?.onPushEvent(folderServerId ?: "inbox")
+            }
+            if (dddAdapterShouldRegisterForAduAdditions) {
+                dddAdapter.registerForAduAdditions()
+            }
         }
     }
 
@@ -92,6 +99,7 @@ class DddBackend(
     }
 
     @Throws(NullPointerException::class)
+    @Override
     private fun loadMessage(folderServerId: String, messageServerId: String): Message {
         val aduId = messageServerId.toLong()
 
@@ -106,6 +114,7 @@ class DddBackend(
     }
 
     @SuppressWarnings("TooGenericExceptionCaught")
+    @Override
     override fun sync(folderServerId: String, syncConfig: SyncConfig, listener: SyncListener) {
         listener.syncStarted(folderServerId)
         val folderData = messageStoreInfo["inbox"]
@@ -120,7 +129,7 @@ class DddBackend(
             // TO-DO:
             // we might need to delete mails one at a time, after calling the saveMessage.
             // This implementation might process the same message multiple times
-            val mailIdsToSync = dddAdapter.getIncomingAduIds()
+            val mailIdsToSync = dddAdapter.incomingAduIds
             var lastMsgServerIdProcessed = 0L
             for (messageServerId in mailIdsToSync) {
                 val message = loadMessage(folderServerId, messageServerId.toString())
@@ -238,7 +247,33 @@ class DddBackend(
         }
     }
 
+    var callback: BackendPusherCallback? = null
     override fun createPusher(callback: BackendPusherCallback): BackendPusher {
-        throw UnsupportedOperationException("not implemented")
+        this.callback = callback
+        return object : BackendPusher {
+            override fun start() {
+                logger.i("DddBackend - Starting pusher for DDD backend")
+                dddAdapterShouldRegisterForAduAdditions = true
+                if (::dddAdapter.isInitialized) {
+                    dddAdapter.registerForAduAdditions()
+                }
+            }
+
+            @Suppress("EmptyFunctionBlock")
+            override fun updateFolders(folderServerIds: Collection<String>) {
+            }
+
+            override fun stop() {
+                logger.i("DddBackend - Stopped pusher for DDD backend")
+                dddAdapterShouldRegisterForAduAdditions = false
+                if (::dddAdapter.isInitialized) {
+                    dddAdapter.unregisterForAduAdditions()
+                }
+            }
+
+            @Suppress("EmptyFunctionBlock")
+            override fun reconnect() {
+            }
+        }
     }
 }
