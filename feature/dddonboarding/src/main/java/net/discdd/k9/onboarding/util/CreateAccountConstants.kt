@@ -1,6 +1,5 @@
 package net.discdd.k9.onboarding.util
 
-import app.k9mail.feature.account.common.domain.entity.AccountDisplayOptions
 import app.k9mail.feature.account.common.domain.entity.AccountSyncOptions
 import app.k9mail.feature.account.common.domain.entity.SpecialFolderOption
 import app.k9mail.feature.account.common.domain.entity.SpecialFolderSettings
@@ -33,12 +32,6 @@ object CreateAccountConstants {
         "username",
         "password",
         null,
-    )
-
-    val DISPLAY_OPTIONS = AccountDisplayOptions(
-        accountName = "accountName",
-        displayName = "displayName",
-        emailSignature = "emailSignature",
     )
 
     val SYNC_OPTIONS = AccountSyncOptions(
