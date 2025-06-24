@@ -42,8 +42,8 @@ android {
         applicationId = "net.discdd.mail"
         testApplicationId = "net.discdd.mail.tests"
 
-        versionCode = 39008
-        versionName = "6.905-DDD-alpha2"
+        versionCode = 39009
+        versionName = "6.905-DDD-alpha3"
 
         minSdk = 33
 
