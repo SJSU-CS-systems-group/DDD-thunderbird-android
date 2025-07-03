@@ -5,6 +5,7 @@ import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 
 class AuthStateConfig(
@@ -20,15 +21,21 @@ class AuthStateConfig(
         }
     }
 
-    fun readState(): Pair<AuthState, String?> {
+    fun readState(): Pair<AuthState, ControlAdu?> {
         if (!configFile.exists()) return Pair(AuthState.LOGGED_OUT, null)
-        val stateAndId = configFile.readLines()
+        // the first line is the state, the rest are properties
+        val stateAndId = configFile.readBytes()
+        val lines = stateAndId.decodeToString().lines()
+        val state = stateAndId.decodeToString().lines().first()
+        val bytes = lines.drop(1).joinToString("\n").toByteArray()
 
-        return when (stateAndId[0]) {
+        val adu = ControlAdu.fromBytes(bytes)
+
+        return when (state) {
             "PENDING" -> Pair(AuthState.PENDING, null)
-            "LOGGED_IN" -> Pair(AuthState.LOGGED_IN, stateAndId[1])
-            "LOGGED_OUT" -> Pair(AuthState.LOGGED_OUT, null)
-            else -> Pair(AuthState.LOGGED_OUT, null)
+            "LOGGED_IN" -> Pair(AuthState.LOGGED_IN, adu)
+            "LOGGED_OUT" -> Pair(AuthState.LOGGED_OUT, adu)
+            else -> Pair(AuthState.LOGGED_OUT, adu)
         }
     }
 

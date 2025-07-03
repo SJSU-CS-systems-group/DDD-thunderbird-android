@@ -72,12 +72,8 @@ internal fun RegisterContent(
                             onClick = {
                                 onEvent(
                                     Event.OnClickRegister(
-                                        state.prefix1.value,
-                                        state.prefix2.value,
-                                        state.prefix3.value,
-                                        state.suffix1.value,
-                                        state.suffix2.value,
-                                        state.suffix3.value,
+                                        state.prefix.value,
+                                        state.suffix.value,
                                         state.password.value,
                                     ),
                                 )
@@ -125,8 +121,8 @@ private fun RegisterInputs(
         }
 
         TextFieldOutlined(
-            value = state.prefix1.value,
-            onValueChange = { onEvent(Event.Prefix1Changed(it)) },
+            value = state.prefix.value,
+            onValueChange = { onEvent(Event.PrefixChanged(it)) },
             label = "Prefix",
         )
 
@@ -138,8 +134,8 @@ private fun RegisterInputs(
         }
 
         TextFieldOutlined(
-            value = state.suffix1.value,
-            onValueChange = { onEvent(Event.Suffix1Changed(it)) },
+            value = state.suffix.value,
+            onValueChange = { onEvent(Event.SuffixChanged(it)) },
             label = "Suffix",
         )
         if (!state.validPassword) {

@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.ui.login.LoginContract.Effect
@@ -114,7 +115,7 @@ class LoginViewModel(
     }
 
     private fun login(email: String, password: String) {
-        authRepository.insertAdu(net.discdd.k9.onboarding.model.LoginAdu(email = email, password = password))
+        authRepository.insertAdu(ControlAdu.LoginControlAdu(mapOf(Pair("email", email), Pair("password", password))))
         checkAuthState()
     }
 
