@@ -5,6 +5,7 @@ import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 
 class AuthStateConfig(
@@ -13,23 +14,23 @@ class AuthStateConfig(
     private val configFile: File = dddDir.resolve("auth.state"),
 ) {
     @Throws(IOException::class)
-    fun writeState(state: AuthState, id: String? = null) {
+    fun writeState(state: AuthState, adu: ControlAdu? = null) {
         if (!dddDir.exists()) dddDir.mkdirs()
         FileOutputStream(configFile).use { os ->
-            os.write("${state.name}\n${id ?: ""}".toByteArray())
+            os.write("${state.name}\n".toByteArray())
+            os.write(adu?.toBytes() ?: byteArrayOf())
         }
     }
 
-    fun readState(): Pair<AuthState, String?> {
+    fun readState(): Pair<AuthState, ControlAdu?> {
         if (!configFile.exists()) return Pair(AuthState.LOGGED_OUT, null)
-        val stateAndId = configFile.readLines()
-
-        return when (stateAndId[0]) {
-            "PENDING" -> Pair(AuthState.PENDING, null)
-            "LOGGED_IN" -> Pair(AuthState.LOGGED_IN, stateAndId[1])
-            "LOGGED_OUT" -> Pair(AuthState.LOGGED_OUT, null)
-            else -> Pair(AuthState.LOGGED_OUT, null)
-        }
+        // the first line is the state, the rest are properties
+        val stateAndId = configFile.readBytes()
+        val lines = stateAndId.decodeToString().lines()
+        val state = lines.first()
+        val bytes = lines.drop(1).joinToString("\n").toByteArray()
+        val adu = if (ControlAdu.isControlAdu(bytes))ControlAdu.fromBytes(bytes) else null
+        return Pair(AuthState.valueOf(state), adu)
     }
 
     fun deleteState() {

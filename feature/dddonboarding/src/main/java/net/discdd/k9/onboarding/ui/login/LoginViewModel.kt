@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.ui.login.LoginContract.Effect
@@ -45,18 +46,19 @@ class LoginViewModel(
     }
 
     private fun checkAuthState() {
-        val (state, id) = authRepository.getState()
+        val (state, adu) = authRepository.getState()
         if (state == AuthState.PENDING) {
             Log.d("LoginViewModel", "state " + state)
             navigatePending()
-        } else if (state == AuthState.LOGGED_IN && id != null) {
-            createAccount(id)
+        } else if (state == AuthState.LOGGED_IN && adu != null && adu is ControlAdu.EmailAck) {
+            createAccount(adu)
         } else if (state == AuthState.LOGGED_OUT) {
             navigateLogin()
         }
     }
 
-    private fun createAccount(id: String) {
+    private fun createAccount(adu: ControlAdu.EmailAck) {
+        val id = adu.email()
         val username = id.substringBefore("@")
         val pattern = "^([a-zA-Z]+)(\\d+[a-zA-Z]*\\d+)([a-zA-Z]+)$".toRegex()
         val matches = pattern.find(username)
@@ -114,7 +116,7 @@ class LoginViewModel(
     }
 
     private fun login(email: String, password: String) {
-        authRepository.insertAdu(net.discdd.k9.onboarding.model.LoginAdu(email = email, password = password))
+        authRepository.insertAdu(ControlAdu.LoginControlAdu(mapOf(Pair("email", email), Pair("password", password))))
         checkAuthState()
     }
 
@@ -129,9 +131,6 @@ class LoginViewModel(
     private fun navigateLogin() {
         Log.d("k9", "navigate login")
         viewModelScope.coroutineContext.cancelChildren()
-        viewModelScope.launch {
-            _effectFlow.emit(Effect.OnError(Error("Login failed, please try again.")))
-        }
     }
 
     private fun navigateLoggedIn(accountUuid: AccountUuid) {

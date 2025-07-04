@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.discdd.k9.onboarding.model.RegisterAdu
+import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.ui.register.RegisterContract.Effect
@@ -29,20 +29,12 @@ class RegisterViewModel(
 
     fun event(event: Event) {
         when (event) {
-            is Event.Prefix1Changed -> setPrefix1(event.prefix)
-            is Event.Prefix2Changed -> setPrefix2(event.prefix)
-            is Event.Prefix3Changed -> setPrefix3(event.prefix)
-            is Event.Suffix1Changed -> setSuffix1(event.suffix)
-            is Event.Suffix2Changed -> setSuffix2(event.suffix)
-            is Event.Suffix3Changed -> setSuffix3(event.suffix)
+            is Event.PrefixChanged -> setPrefix(event.prefix)
+            is Event.SuffixChanged -> setSuffix(event.suffix)
             is Event.PasswordChanged -> setPassword(event.password)
             is Event.OnClickRegister -> register(
-                prefix1 = event.prefix1,
-                prefix2 = event.prefix2,
-                prefix3 = event.prefix3,
-                suffix1 = event.suffix1,
-                suffix2 = event.suffix2,
-                suffix3 = event.suffix3,
+                event.prefix,
+                event.suffix,
                 password = event.password,
             )
         }
@@ -58,50 +50,18 @@ class RegisterViewModel(
         }
     }
 
-    private fun setPrefix1(prefix: String) {
+    private fun setPrefix(prefix: String) {
         _state.update {
             it.copy(
-                prefix1 = it.prefix1.updateValue(prefix),
+                prefix = it.prefix.updateValue(prefix),
             )
         }
     }
 
-    private fun setPrefix2(prefix: String) {
+    private fun setSuffix(suffix: String) {
         _state.update {
             it.copy(
-                prefix2 = it.prefix2.updateValue(prefix),
-            )
-        }
-    }
-
-    private fun setPrefix3(prefix: String) {
-        _state.update {
-            it.copy(
-                prefix3 = it.prefix3.updateValue(prefix),
-            )
-        }
-    }
-
-    private fun setSuffix1(suffix: String) {
-        _state.update {
-            it.copy(
-                suffix1 = it.suffix1.updateValue(suffix),
-            )
-        }
-    }
-
-    private fun setSuffix2(suffix: String) {
-        _state.update {
-            it.copy(
-                suffix2 = it.suffix2.updateValue(suffix),
-            )
-        }
-    }
-
-    private fun setSuffix3(suffix: String) {
-        _state.update {
-            it.copy(
-                suffix3 = it.suffix3.updateValue(suffix),
+                suffix = it.suffix.updateValue(suffix),
             )
         }
     }
@@ -115,23 +75,17 @@ class RegisterViewModel(
     }
 
     private fun register(
-        prefix1: String,
-        prefix2: String,
-        prefix3: String,
-        suffix1: String,
-        suffix2: String,
-        suffix3: String,
+        prefix: String,
+        suffix: String,
         password: String,
     ) {
         authRepository.insertAdu(
-            RegisterAdu(
-                prefix1 = prefix1,
-                prefix2 = prefix2,
-                prefix3 = prefix3,
-                suffix1 = suffix1,
-                suffix2 = suffix2,
-                suffix3 = suffix3,
-                password = password,
+            ControlAdu.RegisterControlAdu(
+                mapOf(
+                    Pair("prefix", prefix),
+                    Pair("suffix", suffix),
+                    Pair("password", password),
+                ),
             ),
         )
         checkAuthState()
