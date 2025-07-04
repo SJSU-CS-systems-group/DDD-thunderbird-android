@@ -3,6 +3,7 @@ package net.discdd.k9.onboarding.ui.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import app.k9mail.feature.account.common.domain.entity.AccountDisplayOptions
 import app.k9mail.feature.account.common.domain.entity.AccountState
 import app.k9mail.feature.account.setup.AccountSetupExternalContract.AccountCreator.AccountCreatorResult
@@ -41,11 +42,11 @@ class LoginViewModel(
             is Event.EmailAddressChanged -> setEmailAddress(event.emailAddress)
             is Event.PasswordChanged -> setPassword(event.password)
             is Event.OnClickLogin -> login(email = event.emailAddress, password = event.password)
-            Event.CheckAuthState -> checkAuthState()
+            Event.CheckAuthState -> viewModelScope.launch { checkAuthState() }
         }
     }
 
-    private fun checkAuthState() {
+    private suspend fun checkAuthState() {
         val (state, adu) = authRepository.getState()
         if (state == AuthState.PENDING) {
             Log.d("LoginViewModel", "state " + state)
@@ -116,8 +117,17 @@ class LoginViewModel(
     }
 
     private fun login(email: String, password: String) {
-        authRepository.insertAdu(ControlAdu.LoginControlAdu(mapOf(Pair("email", email), Pair("password", password))))
-        checkAuthState()
+        viewModelScope.launch {
+            authRepository.insertAdu(
+                ControlAdu.LoginControlAdu(
+                    mapOf(
+                        Pair("email", email),
+                        Pair("password", password)
+                    )
+                )
+            )
+            checkAuthState()
+        }
     }
 
     private fun navigatePending() {

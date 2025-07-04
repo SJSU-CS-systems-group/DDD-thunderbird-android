@@ -24,11 +24,15 @@ interface AuthRepository {
         }
     }
 
-    val contentProviderUri: Uri
+    interface AuthRepositoryListener {
+        fun onAuthStateChanged()
+    }
 
-    fun getState(): Pair<AuthState, ControlAdu?>
+    var authRepositoryListener: AuthRepositoryListener?
 
-    fun logout()
-    fun getId(): String?
-    fun insertAdu(adu: ControlAdu): Boolean
+    suspend fun getState(): Pair<AuthState, ControlAdu?>
+
+    suspend fun logout()
+    suspend fun getId(): String?
+    suspend fun insertAdu(adu: ControlAdu): Boolean
 }

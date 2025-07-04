@@ -15,11 +15,12 @@ import net.discdd.k9.onboarding.ui.pending.PendingContract.Effect
 
 class PendingViewModel(
     private val authRepository: AuthRepository,
-) : ViewModel() {
+) : ViewModel(), AuthRepository.AuthRepositoryListener {
     private val _effectFlow = MutableSharedFlow<Effect>(replay = 1)
     val effectFlow: SharedFlow<Effect> = _effectFlow.asSharedFlow()
 
     private fun refreshScreen() {
+        viewModelScope.launch {
         // only recheck login if we aren't pending
         if (authRepository.getState().first != AuthState.PENDING) {
             Log.d("k9", "navigate login")
@@ -29,6 +30,7 @@ class PendingViewModel(
             }
         }
     }
+    }
 
     fun whoAmI() {
         authRepository.insertAdu(ControlAdu.WhoAmIControlAdu())
@@ -36,5 +38,18 @@ class PendingViewModel(
 
     fun checkState() {
         refreshScreen()
+    }
+
+    fun monitorAuthState() {
+        authRepository.authRepositoryListener = this
+    }
+
+    fun unMonitorAuthState() {
+        val currentListener = authRepository.authRepositoryListener
+        if (currentListener == null || currentListener == this) authRepository.authRepositoryListener = null
+    }
+
+    override fun onAuthStateChanged() {
+        checkState()
     }
 }

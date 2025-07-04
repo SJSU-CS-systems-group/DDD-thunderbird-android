@@ -41,11 +41,13 @@ class RegisterViewModel(
     }
 
     private fun checkAuthState() {
-        val (state, ackAdu) = authRepository.getState()
-        if (state == AuthState.PENDING) {
-            viewModelScope.launch {
-                Log.d("DDDOnboarding", "emitting")
-                _effectFlow.emit(Effect.OnPendingState)
+        viewModelScope.launch {
+            val (state, ackAdu) = authRepository.getState()
+            if (state == AuthState.PENDING) {
+                viewModelScope.launch {
+                    Log.d("DDDOnboarding", "emitting")
+                    _effectFlow.emit(Effect.OnPendingState)
+                }
             }
         }
     }
@@ -79,15 +81,17 @@ class RegisterViewModel(
         suffix: String,
         password: String,
     ) {
-        authRepository.insertAdu(
-            ControlAdu.RegisterControlAdu(
-                mapOf(
-                    Pair("prefix", prefix),
-                    Pair("suffix", suffix),
-                    Pair("password", password),
+        viewModelScope.launch {
+            authRepository.insertAdu(
+                ControlAdu.RegisterControlAdu(
+                    mapOf(
+                        Pair("prefix", prefix),
+                        Pair("suffix", suffix),
+                        Pair("password", password),
+                    ),
                 ),
-            ),
-        )
-        checkAuthState()
+            )
+            checkAuthState()
+        }
     }
 }
