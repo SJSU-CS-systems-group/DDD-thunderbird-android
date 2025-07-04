@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -22,7 +24,7 @@ import app.k9mail.core.ui.compose.designsystem.template.ResponsiveContent
 @Composable
 internal fun PendingContent(
     refreshState: () -> Unit,
-    abortLogin: () -> Unit,
+    whoAmI: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -35,6 +37,36 @@ internal fun PendingContent(
                 onRefresh = { refreshState() },
                 isRefreshing = refreshing.value,
             ) {
+                var showDialog = remember { mutableStateOf(false) }
+
+                if (showDialog.value) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog.value = false },
+                        confirmButton = {
+                            Button(onClick = {
+                                showDialog.value = false
+                            }) {
+                                Text("OK")
+                            }
+                        },
+                        title = { Text("Cannot abort pending operation") },
+                        text = {
+                            Text(
+                                """We are waiting for a response from the server.
+                          We cannot do anything until we have heard back.
+
+                          If you really want to abort, you can clear the storage of the DDD mail app using Android settings.
+                          """,
+                            )
+                        },
+                    )
+                }
+
+                // In your ButtonFilledTonal:
+                ButtonFilledTonal(
+                    text = "Abort Login",
+                    onClick = { showDialog.value = true },
+                )
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
 
@@ -53,7 +85,11 @@ internal fun PendingContent(
                         ) {
                             ButtonFilledTonal(
                                 text = "Abort Login",
-                                onClick = { abortLogin() },
+                                onClick = {
+                                    showDialog.value = true
+                                    // queue up a whoami request in case something is stuck
+                                    whoAmI()
+                                },
                             )
                         }
                     }

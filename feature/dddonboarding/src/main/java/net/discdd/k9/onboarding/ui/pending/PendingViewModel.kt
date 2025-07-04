@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.ui.pending.PendingContract.Effect
@@ -29,9 +30,8 @@ class PendingViewModel(
         }
     }
 
-    fun redoLogin() {
-        authRepository.logout()
-        refreshScreen()
+    fun whoAmI() {
+        authRepository.insertAdu(ControlAdu.WhoAmIControlAdu())
     }
 
     fun checkState() {

@@ -21,6 +21,7 @@ import com.fsck.k9.mail.internet.MimeMessage
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.InputStream
 import java.util.*
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +33,7 @@ import okio.source
 
 @Suppress("UnusedParameter", "UnusedPrivateProperty", "TooManyFunctions")
 class DddBackend(
-    context: Context,
+    val context: Context,
     accountName: String,
     private val backendStorage: BackendStorage,
 ) : Backend {
@@ -67,6 +68,11 @@ class DddBackend(
         }
     }
 
+    override fun removeBackend() {
+        val dddDir: File = context.filesDir.resolve("ddd")
+        val configFile: File = dddDir.resolve("auth.state")
+        configFile.delete()
+    }
     override fun refreshFolderList() {
         val localFolderServerIds = backendStorage.getFolderServerIds().toSet()
 

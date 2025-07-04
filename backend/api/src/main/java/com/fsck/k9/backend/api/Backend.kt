@@ -90,4 +90,5 @@ interface Backend {
     fun sendMessage(message: Message)
 
     fun createPusher(callback: BackendPusherCallback): BackendPusher
+    fun removeBackend() {}
 }

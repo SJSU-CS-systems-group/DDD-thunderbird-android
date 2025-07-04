@@ -26,7 +26,7 @@ fun PendingScreen(
     Log.d("DDDOnboarding", "In pending")
     PendingContent(
         refreshState = { viewModel.checkState() },
-        abortLogin = { viewModel.redoLogin() },
+        whoAmI = { viewModel.whoAmI() },
         modifier = modifier,
     )
 }

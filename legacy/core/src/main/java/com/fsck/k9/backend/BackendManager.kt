@@ -36,8 +36,11 @@ class BackendManager(private val backendFactories: Map<String, BackendFactory>) 
     }
 
     fun removeBackend(account: Account) {
-        synchronized(backendCache) {
+        val backendContainer = synchronized(backendCache) {
             backendCache.remove(account.uuid)
+        }
+        backendContainer?.backend?.run {
+            this.removeBackend()
         }
 
         notifyListeners(account)
