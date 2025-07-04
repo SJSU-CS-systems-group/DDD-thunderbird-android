@@ -57,7 +57,15 @@ class LoginViewModel(
         }
     }
 
-    private fun createAccount(id: String) {
+    private fun createAccount(adu: ControlAdu) {
+        val id = if (adu is ControlAdu.LoginAckControlAdu) {
+            adu.email()
+        } else if (adu is ControlAdu.RegisterAckControlAdu) {
+            adu.email()
+        } else {
+            Log.e("LoginViewModel", "Unexpected ADU type: ${adu.javaClass}")
+            throw IllegalArgumentException("Unexpected ADU type: ${adu.javaClass}")
+        }
         val username = id.substringBefore("@")
         val pattern = "^([a-zA-Z]+)(\\d+[a-zA-Z]*\\d+)([a-zA-Z]+)$".toRegex()
         val matches = pattern.find(username)
@@ -130,9 +138,6 @@ class LoginViewModel(
     private fun navigateLogin() {
         Log.d("k9", "navigate login")
         viewModelScope.coroutineContext.cancelChildren()
-        viewModelScope.launch {
-            _effectFlow.emit(Effect.OnError(Error("Login failed, please try again.")))
-        }
     }
 
     private fun navigateLoggedIn(accountUuid: AccountUuid) {

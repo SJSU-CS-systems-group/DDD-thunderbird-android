@@ -14,10 +14,11 @@ class AuthStateConfig(
     private val configFile: File = dddDir.resolve("auth.state"),
 ) {
     @Throws(IOException::class)
-    fun writeState(state: AuthState, id: String? = null) {
+    fun writeState(state: AuthState, adu: ControlAdu? = null) {
         if (!dddDir.exists()) dddDir.mkdirs()
         FileOutputStream(configFile).use { os ->
-            os.write("${state.name}\n${id ?: ""}".toByteArray())
+            os.write("${state.name}\n".toByteArray())
+            os.write(adu?.toBytes() ?: byteArrayOf())
         }
     }
 
@@ -28,15 +29,8 @@ class AuthStateConfig(
         val lines = stateAndId.decodeToString().lines()
         val state = stateAndId.decodeToString().lines().first()
         val bytes = lines.drop(1).joinToString("\n").toByteArray()
-
-        val adu = ControlAdu.fromBytes(bytes)
-
-        return when (state) {
-            "PENDING" -> Pair(AuthState.PENDING, null)
-            "LOGGED_IN" -> Pair(AuthState.LOGGED_IN, adu)
-            "LOGGED_OUT" -> Pair(AuthState.LOGGED_OUT, adu)
-            else -> Pair(AuthState.LOGGED_OUT, adu)
-        }
+        val adu = if (ControlAdu.isControlAdu(bytes))ControlAdu.fromBytes(bytes) else null
+        return Pair(AuthState.valueOf(state), adu)
     }
 
     fun deleteState() {

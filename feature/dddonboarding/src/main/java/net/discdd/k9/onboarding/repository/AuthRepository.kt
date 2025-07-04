@@ -8,11 +8,23 @@ interface AuthRepository {
         LOGGED_IN,
         PENDING,
         LOGGED_OUT,
+        ERROR,
+        UNKNOWN;
+        companion object {
+            fun fromString(state: String): AuthState {
+                return try {
+                    AuthState.valueOf(state)
+                } catch (ignore: IllegalArgumentException) {
+                    // If the state is not recognized, return UNKNOWN
+                    UNKNOWN
+                }
+            }
+        }
     }
 
     val contentProviderUri: Uri
 
-    fun getState(): Pair<AuthState, String?>
+    fun getState(): Pair<AuthState, ControlAdu?>
 
     fun logout()
     fun getId(): String?

@@ -23,38 +23,18 @@ class AuthRepositoryImpl(
 
     override val contentProviderUri: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/messages")
 
-    override fun getState(): Pair<AuthState, String?> {
-        try {
-            val stateAndId = authStateConfig.readState()
-            return when (stateAndId.first) {
-                AuthState.LOGGED_IN -> stateAndId
-                AuthState.PENDING -> {
-                    val ackAdu = getAckAdu()
-                    if (ackAdu == null) {
-                        authStateConfig.writeState(AuthState.PENDING)
-                        Pair(AuthState.PENDING, null)
-                        // check if we have LoginAckControlAdu
-                    } else if (
-                        (ackAdu is ControlAdu.LoginAckControlAdu && ackAdu.success()) ||
-                        (ackAdu is ControlAdu.RegisterAckControlAdu && ackAdu.success())
-                        ){
-                        val email = if (ackAdu is ControlAdu.LoginAckControlAdu) ackAdu.email()
-                            else if (ackAdu is ControlAdu.RegisterAckControlAdu) ackAdu.email()
-                            else throw IOException("Email not found in ACK ADU")
-                        logger.log(Level.INFO, "Acknowledgement received: $ackAdu")
-                        authStateConfig.writeState(AuthState.LOGGED_IN, email)
-                        Pair(AuthState.LOGGED_IN, email)
-                    } else {
-                        authStateConfig.writeState(AuthState.LOGGED_OUT)
-                        Pair(AuthState.LOGGED_OUT, null)
-                    }
+    override fun getState(): Pair<AuthState, ControlAdu?> {
+        var adu = getAckAdu()
+        if (adu != null) {
+            if (adu is ControlAdu.EmailAck) {
+                if (adu.success()) {
+                    authStateConfig.writeState(AuthState.LOGGED_IN, adu)
+                } else {
+                    authStateConfig.writeState(AuthState.ERROR, adu)
                 }
-                AuthState.LOGGED_OUT -> stateAndId
             }
-        } catch (e: IOException) {
-            showToast(context, e.message)
-            return Pair(AuthState.LOGGED_OUT, null)
         }
+        return authStateConfig.readState()
     }
 
     override fun logout() {
@@ -71,7 +51,7 @@ class AuthRepositoryImpl(
                     val data = cursor.getBlob(cursor.getColumnIndexOrThrow("data"))
                     val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
                     lastSeenAduId = id
-                    Log.d("k9", "adu id: $id => $data")
+                    Log.d("dddEmail", "adu id: $id => $data")
                     // delete adu if exists
                     if (ControlAdu.isControlAdu(data)) {
                         ack = ControlAdu.fromBytes(data)
@@ -86,7 +66,15 @@ class AuthRepositoryImpl(
     }
 
     override fun getId(): String? {
-        return authStateConfig.readState().second
+        return authStateConfig.readState().second?.let {
+            if (it is ControlAdu.LoginAckControlAdu) {
+                it.email()
+            } else if (it is ControlAdu.RegisterAckControlAdu) {
+                it.email()
+            } else {
+                null
+            }
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -98,7 +86,7 @@ class AuthRepositoryImpl(
         try {
             val resolver = context.contentResolver
             val uri = resolver.insert(contentProviderUri, values)
-            Log.d("DDDOnboarding", "uri: " + uri)
+            Log.d("DDDOnboarding", "uri: $uri")
             if (uri == null) {
                 throw IOException("Adu not inserted")
             }
