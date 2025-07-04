@@ -96,14 +96,16 @@ class SettingsListFragment : Fragment(), ItemTouchCallback {
                 for (account in accounts) {
                     addAccount(account, isDraggable)
                 }
-
+/* not used in DDD mail
                 addAction(
                     text = getString(R.string.add_account_action),
                     navigationAction = R.id.action_settingsListScreen_to_addAccountScreen,
                     icon = Icons.Outlined.Add,
                 )
+ */
             }
 
+            /* not used in DDD mail
             addSection(title = getString(R.string.settings_list_backup_category)) {
                 addAction(
                     text = getString(R.string.settings_export_title),
@@ -117,6 +119,7 @@ class SettingsListFragment : Fragment(), ItemTouchCallback {
                     icon = Icons.Outlined.Download,
                 )
             }
+             */
 
             addSection(title = getString(R.string.settings_list_miscellaneous_category)) {
                 addAction(
