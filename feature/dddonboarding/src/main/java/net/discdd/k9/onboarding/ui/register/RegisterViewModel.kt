@@ -85,8 +85,8 @@ class RegisterViewModel(
                     Pair("prefix", prefix),
                     Pair("suffix", suffix),
                     Pair("password", password),
-                )
-            )
+                ),
+            ),
         )
         checkAuthState()
     }

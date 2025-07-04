@@ -9,7 +9,9 @@ interface AuthRepository {
         PENDING,
         LOGGED_OUT,
         ERROR,
-        UNKNOWN;
+        UNKNOWN,
+        ;
+
         companion object {
             fun fromString(state: String): AuthState {
                 return try {

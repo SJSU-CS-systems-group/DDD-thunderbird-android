@@ -29,7 +29,6 @@ import com.mikepenz.fastadapter.drag.ItemTouchCallback
 import com.mikepenz.fastadapter.drag.SimpleDragCallback
 import com.mikepenz.fastadapter.utils.DragDropUtil
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import app.k9mail.feature.settings.importing.R as SettingsImportR
 
 class SettingsListFragment : Fragment(), ItemTouchCallback {
     private val viewModel: SettingsViewModel by viewModel()
