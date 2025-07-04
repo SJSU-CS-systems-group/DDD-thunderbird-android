@@ -27,7 +27,7 @@ class AuthStateConfig(
         // the first line is the state, the rest are properties
         val stateAndId = configFile.readBytes()
         val lines = stateAndId.decodeToString().lines()
-        val state = stateAndId.decodeToString().lines().first()
+        val state = lines.first()
         val bytes = lines.drop(1).joinToString("\n").toByteArray()
         val adu = if (ControlAdu.isControlAdu(bytes))ControlAdu.fromBytes(bytes) else null
         return Pair(AuthState.valueOf(state), adu)

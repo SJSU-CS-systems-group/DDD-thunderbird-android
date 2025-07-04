@@ -46,26 +46,19 @@ class LoginViewModel(
     }
 
     private fun checkAuthState() {
-        val (state, id) = authRepository.getState()
+        val (state, adu) = authRepository.getState()
         if (state == AuthState.PENDING) {
             Log.d("LoginViewModel", "state " + state)
             navigatePending()
-        } else if (state == AuthState.LOGGED_IN && id != null) {
-            createAccount(id)
+        } else if (state == AuthState.LOGGED_IN && adu != null && adu is ControlAdu.EmailAck) {
+            createAccount(adu)
         } else if (state == AuthState.LOGGED_OUT) {
             navigateLogin()
         }
     }
 
-    private fun createAccount(adu: ControlAdu) {
-        val id = if (adu is ControlAdu.LoginAckControlAdu) {
-            adu.email()
-        } else if (adu is ControlAdu.RegisterAckControlAdu) {
-            adu.email()
-        } else {
-            Log.e("LoginViewModel", "Unexpected ADU type: ${adu.javaClass}")
-            throw IllegalArgumentException("Unexpected ADU type: ${adu.javaClass}")
-        }
+    private fun createAccount(adu: ControlAdu.EmailAck) {
+        val id = adu.email()
         val username = id.substringBefore("@")
         val pattern = "^([a-zA-Z]+)(\\d+[a-zA-Z]*\\d+)([a-zA-Z]+)$".toRegex()
         val matches = pattern.find(username)
