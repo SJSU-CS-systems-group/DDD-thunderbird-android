@@ -1,75 +1,76 @@
 package net.discdd.k9.onboarding.repository
 
-import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
 import android.util.Log
-import java.io.IOException
-import java.util.logging.Level
-import java.util.logging.Logger
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import net.discdd.adapter.DDDClientAdapter
 import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.util.AuthStateConfig
-import net.discdd.k9.onboarding.util.showToast
 
 class AuthRepositoryImpl(
     private val authStateConfig: AuthStateConfig,
     private val context: Context,
 ) : AuthRepository {
-    companion object {
-        private val logger: Logger = Logger.getLogger(AuthRepositoryImpl::class.java.name)
-        private val RESOLVER_COLUMNS = arrayOf("data")
-    }
 
-    override val contentProviderUri: Uri = Uri.parse("content://net.discdd.provider.datastoreprovider/messages")
-
-    override fun getState(): Pair<AuthState, ControlAdu?> {
-        var adu = getAckAdu()
-        if (adu != null) {
-            if (adu is ControlAdu.EmailAck) {
-                if (adu.success()) {
-                    authStateConfig.writeState(AuthState.LOGGED_IN, adu)
-                } else {
-                    authStateConfig.writeState(AuthState.ERROR, adu)
-                }
+    override var authRepositoryListener: AuthRepository.AuthRepositoryListener? = null
+        set(value) {
+            if (value == null) {
+                // unregister if there is no listener
+                dddClientAdapter.unregisterForAduAdditions()
+            } else {
+                // someone is listening, register for ADU additions
+                dddClientAdapter.registerForAduAdditions()
             }
+            field = value
         }
-        return authStateConfig.readState()
+
+    private val dddClientAdapter: DDDClientAdapter by lazy {
+        DDDClientAdapter(context, {
+            authRepositoryListener?.onAuthStateChanged()
+        })
     }
 
-    override fun logout() {
+    override suspend fun getState(): Pair<AuthState, ControlAdu?> = withContext(Dispatchers.IO) {
+        getAckAdu()?.run {
+            val (adu, id) = this
+            if (adu.success()) {
+                authStateConfig.writeState(AuthState.LOGGED_IN, adu as ControlAdu)
+            } else {
+                authStateConfig.writeState(AuthState.ERROR, adu as ControlAdu)
+            }
+            deleteUptoAduId(id)
+        }
+        authStateConfig.readState()
+    }
+
+    override suspend fun logout() = withContext(Dispatchers.IO) {
         authStateConfig.writeState(AuthState.LOGGED_OUT)
     }
 
-    @Suppress("NestedBlockDepth")
-    private fun getAckAdu(): ControlAdu? {
-        return context.contentResolver.query(contentProviderUri, null, null, null, null)?.use { cursor ->
-            var lastSeenAduId: String? = null
-            var ack: ControlAdu? = null
-            if (cursor.moveToFirst()) {
-                do {
-                    val data = cursor.getBlob(cursor.getColumnIndexOrThrow("data"))
-                    val id = cursor.getString(cursor.getColumnIndexOrThrow("id"))
-                    lastSeenAduId = id
-                    Log.d("dddEmail", "adu id: $id => $data")
-                    // delete adu if exists
-                    if (ControlAdu.isControlAdu(data)) {
-                        ack = ControlAdu.fromBytes(data)
-                    }
-                } while (ack == null && cursor.moveToNext())
+    private fun getAckAdu(): Pair<ControlAdu.EmailAck, Long>? {
+        var lastSeenAdu: ControlAdu.EmailAck? = null
+        var lastSeenAduId = -1L
+        for (i in dddClientAdapter.incomingAduIds ?: emptyList()) {
+            val adu = dddClientAdapter.receiveAdu(i)
+            if (adu is ControlAdu.EmailAck) {
+                lastSeenAdu = adu
+            } else {
+                Log.w("dddEmail", "Received non-EmailAck ADU: $adu")
             }
-            if (lastSeenAduId != null) {
-                context.contentResolver.delete(contentProviderUri, "deleteAllADUsUpto", arrayOf(lastSeenAduId))
-            }
-            ack
+            lastSeenAduId = i
         }
+        return lastSeenAdu?.let { Pair(it, lastSeenAduId) }
     }
 
-    override fun getId(): String? {
-        return authStateConfig.readState().second?.let {
-            if (it is ControlAdu.LoginAckControlAdu) {
-                it.email()
-            } else if (it is ControlAdu.RegisterAckControlAdu) {
+    private fun deleteUptoAduId(aduId: Long) {
+        dddClientAdapter.deleteReceivedAdusUpTo(aduId)
+    }
+
+    override suspend fun getId(): String? = withContext(Dispatchers.IO) {
+        authStateConfig.readState().second?.let {
+            if (it is ControlAdu.EmailAck) {
                 it.email()
             } else {
                 null
@@ -78,24 +79,14 @@ class AuthRepositoryImpl(
     }
 
     @Suppress("TooGenericExceptionCaught")
-    override fun insertAdu(adu: ControlAdu): Boolean {
-        val values = ContentValues().apply {
-            put(RESOLVER_COLUMNS[0], adu.toBytes())
-        }
-
+    override suspend fun insertAdu(adu: ControlAdu): Boolean = withContext(Dispatchers.IO) {
         try {
-            val resolver = context.contentResolver
-            val uri = resolver.insert(contentProviderUri, values)
-            Log.d("DDDOnboarding", "uri: $uri")
-            if (uri == null) {
-                throw IOException("Adu not inserted")
+            dddClientAdapter.createAduToSend().use { out ->
+                out.write(adu.toBytes())
             }
-            authStateConfig.writeState(AuthState.PENDING)
-            return true
-        } catch (e: Exception) {
-            showToast(context, "Failed communication to DDD Client: ${e.message}")
-            logger.log(Level.SEVERE, "DDDOnboarding", "Failed to insert Adu: ${e.message}")
-            return false
+            true
+        } catch (_: Exception) {
+            false
         }
     }
 }

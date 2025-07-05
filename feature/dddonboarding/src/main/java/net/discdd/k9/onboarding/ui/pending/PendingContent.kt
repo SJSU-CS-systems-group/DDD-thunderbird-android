@@ -42,11 +42,6 @@ internal fun PendingContent(
 
                 if (showDialog.value) DontAbortDialog(showDialog)
 
-                // In your ButtonFilledTonal:
-                ButtonFilledTonal(
-                    text = "Abort Login",
-                    onClick = { showDialog.value = true },
-                )
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
 
@@ -95,11 +90,12 @@ fun DontAbortDialog(showDialog: MutableState<Boolean>) {
         title = { Text("Cannot abort pending operation") },
         text = {
             Text(
-                """We are waiting for a response from the server.
-                         We cannot do anything until we have heard back.
+                """
+                    We are waiting for a response from the server.
+                    We cannot do anything until we have heard back.
 
-                         If you really want to abort, you can clear the storage of the DDD mail app using Android settings.
-                      """,
+                    If you really want to abort, you can clear the storage of the DDD mail app using Android settings.
+                """.trimIndent(),
             )
         },
     )
