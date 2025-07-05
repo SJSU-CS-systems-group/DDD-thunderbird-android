@@ -1,6 +1,5 @@
 package net.discdd.k9.onboarding.repository
 
-import android.net.Uri
 import net.discdd.app.k9.common.ControlAdu
 
 interface AuthRepository {

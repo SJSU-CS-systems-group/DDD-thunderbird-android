@@ -3,7 +3,6 @@ package net.discdd.k9.onboarding.ui.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import app.k9mail.feature.account.common.domain.entity.AccountDisplayOptions
 import app.k9mail.feature.account.common.domain.entity.AccountState
 import app.k9mail.feature.account.setup.AccountSetupExternalContract.AccountCreator.AccountCreatorResult
@@ -122,9 +121,9 @@ class LoginViewModel(
                 ControlAdu.LoginControlAdu(
                     mapOf(
                         Pair("email", email),
-                        Pair("password", password)
-                    )
-                )
+                        Pair("password", password),
+                    ),
+                ),
             )
             checkAuthState()
         }

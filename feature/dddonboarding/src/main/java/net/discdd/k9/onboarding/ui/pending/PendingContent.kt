@@ -100,7 +100,7 @@ fun DontAbortDialog(showDialog: MutableState<Boolean>) {
                     We cannot do anything until we have heard back.
 
                     If you really want to abort, you can clear the storage of the DDD mail app using Android settings.
-                    """.trimIndent()
+                """.trimIndent(),
             )
         },
     )

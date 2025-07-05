@@ -23,15 +23,15 @@ class PendingViewModel(
 
     private fun refreshScreen() {
         viewModelScope.launch {
-        // only recheck login if we aren't pending
-        if (authRepository.getState().first != AuthState.PENDING) {
-            Log.d("k9", "navigate login")
-            viewModelScope.coroutineContext.cancelChildren()
-            viewModelScope.launch {
-                _effectFlow.emit(Effect.OnRedoLoginState)
+            // only recheck login if we aren't pending
+            if (authRepository.getState().first != AuthState.PENDING) {
+                Log.d("k9", "navigate login")
+                viewModelScope.coroutineContext.cancelChildren()
+                viewModelScope.launch {
+                    _effectFlow.emit(Effect.OnRedoLoginState)
+                }
             }
         }
-    }
     }
 
     fun whoAmI() {

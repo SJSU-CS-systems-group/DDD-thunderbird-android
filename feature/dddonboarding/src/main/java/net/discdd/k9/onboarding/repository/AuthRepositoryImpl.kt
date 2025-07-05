@@ -1,11 +1,7 @@
 package net.discdd.k9.onboarding.repository
 
-import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
 import android.util.Log
-import java.io.IOException
-import java.util.logging.Level
 import java.util.logging.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,19 +9,21 @@ import net.discdd.adapter.DDDClientAdapter
 import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.util.AuthStateConfig
-import net.discdd.k9.onboarding.util.showToast
 
 class AuthRepositoryImpl(
     private val authStateConfig: AuthStateConfig,
     private val context: Context,
 ) : AuthRepository {
-    companion object {
-        private val logger: Logger = Logger.getLogger(AuthRepositoryImpl::class.java.name)
-    }
 
     override var authRepositoryListener: AuthRepository.AuthRepositoryListener? = null
         set(value) {
-            if (value == null) dddClientAdapter.unregisterForAduAdditions() else dddClientAdapter.registerForAduAdditions()
+            if (value == null) {
+                // unregister if there is no listener
+                dddClientAdapter.unregisterForAduAdditions()
+            } else {
+                // someone is listening, register for ADU additions
+                dddClientAdapter.registerForAduAdditions()
+            }
             field = value
         }
 
@@ -48,7 +46,7 @@ class AuthRepositoryImpl(
         authStateConfig.readState()
     }
 
-    override suspend fun logout() = withContext(Dispatchers.IO){
+    override suspend fun logout() = withContext(Dispatchers.IO) {
         authStateConfig.writeState(AuthState.LOGGED_OUT)
     }
 
@@ -64,11 +62,11 @@ class AuthRepositoryImpl(
             }
             lastSeenAduId = i
         }
-        return lastSeenAdu?.let {Pair(it, lastSeenAduId)}
+        return lastSeenAdu?.let { Pair(it, lastSeenAduId) }
     }
 
     private fun deleteUptoAduId(aduId: Long) {
-     dddClientAdapter.deleteReceivedAdusUpTo(aduId)
+        dddClientAdapter.deleteReceivedAdusUpTo(aduId)
     }
 
     override suspend fun getId(): String? = withContext(Dispatchers.IO) {
@@ -88,7 +86,7 @@ class AuthRepositoryImpl(
                 out.write(adu.toBytes())
             }
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
