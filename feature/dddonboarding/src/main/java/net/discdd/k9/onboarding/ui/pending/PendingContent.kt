@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,28 +40,7 @@ internal fun PendingContent(
             ) {
                 var showDialog = remember { mutableStateOf(false) }
 
-                if (showDialog.value) {
-                    AlertDialog(
-                        onDismissRequest = { showDialog.value = false },
-                        confirmButton = {
-                            Button(onClick = {
-                                showDialog.value = false
-                            }) {
-                                Text("OK")
-                            }
-                        },
-                        title = { Text("Cannot abort pending operation") },
-                        text = {
-                            Text(
-                                """We are waiting for a response from the server.
-                          We cannot do anything until we have heard back.
-
-                          If you really want to abort, you can clear the storage of the DDD mail app using Android settings.
-                          """,
-                            )
-                        },
-                    )
-                }
+                if (showDialog.value) DontAbortDialog(showDialog)
 
                 // In your ButtonFilledTonal:
                 ButtonFilledTonal(
@@ -97,4 +77,30 @@ internal fun PendingContent(
             }
         }
     }
+}
+
+@Composable
+fun DontAbortDialog(showDialog: MutableState<Boolean>) {
+    AlertDialog(
+        onDismissRequest = { showDialog.value = false },
+        confirmButton = {
+            Button(
+                onClick = {
+                    showDialog.value = false
+                },
+            ) {
+                Text("OK")
+            }
+        },
+        title = { Text("Cannot abort pending operation") },
+        text = {
+            Text(
+                """We are waiting for a response from the server.
+                         We cannot do anything until we have heard back.
+
+                         If you really want to abort, you can clear the storage of the DDD mail app using Android settings.
+                      """,
+            )
+        },
+    )
 }
