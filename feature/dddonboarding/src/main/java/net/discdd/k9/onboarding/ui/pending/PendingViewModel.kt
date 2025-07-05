@@ -3,11 +3,13 @@ package net.discdd.k9.onboarding.ui.pending
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
@@ -33,7 +35,12 @@ class PendingViewModel(
     }
 
     fun whoAmI() {
-        authRepository.insertAdu(ControlAdu.WhoAmIControlAdu())
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                Log.d("k9", "whoAmI called")
+            }
+            authRepository.insertAdu(ControlAdu.WhoAmIControlAdu())
+        }
     }
 
     fun checkState() {
