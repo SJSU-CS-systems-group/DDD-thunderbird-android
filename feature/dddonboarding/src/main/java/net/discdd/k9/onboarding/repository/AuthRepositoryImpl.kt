@@ -2,7 +2,6 @@ package net.discdd.k9.onboarding.repository
 
 import android.content.Context
 import android.util.Log
-import java.util.logging.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.discdd.adapter.DDDClientAdapter

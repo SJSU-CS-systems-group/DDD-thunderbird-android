@@ -42,11 +42,6 @@ internal fun PendingContent(
 
                 if (showDialog.value) DontAbortDialog(showDialog)
 
-                // In your ButtonFilledTonal:
-                ButtonFilledTonal(
-                    text = "Abort Login",
-                    onClick = { showDialog.value = true },
-                )
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
 
