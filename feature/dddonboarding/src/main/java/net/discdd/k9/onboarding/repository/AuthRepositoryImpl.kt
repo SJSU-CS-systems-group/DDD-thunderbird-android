@@ -13,7 +13,6 @@ class AuthRepositoryImpl(
     private val authStateConfig: AuthStateConfig,
     private val context: Context,
 ) : AuthRepository {
-
     override var authRepositoryListener: AuthRepository.AuthRepositoryListener? = null
         set(value) {
             if (value == null) {
@@ -46,20 +45,22 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun logout() = withContext(Dispatchers.IO) {
-        authStateConfig.writeState(AuthState.LOGGED_OUT)
+        authStateConfig.deleteState()
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun getAckAdu(): Pair<ControlAdu.EmailAck, Long>? {
         var lastSeenAdu: ControlAdu.EmailAck? = null
         var lastSeenAduId = -1L
         for (i in dddClientAdapter.incomingAduIds ?: emptyList()) {
-            val adu = dddClientAdapter.receiveAdu(i)
-            if (adu is ControlAdu.EmailAck) {
-                lastSeenAdu = adu
-            } else {
-                Log.w("dddEmail", "Received non-EmailAck ADU: $adu")
+            dddClientAdapter.receiveAdu(i)?.readAllBytes().apply {
+                try {
+                    lastSeenAdu = ControlAdu.fromBytes(this) as ControlAdu.EmailAck
+                } catch (e: Exception) {
+                    Log.w("dddEmail", "Failed to read EmailAck for ID $i", e)
+                }
+                lastSeenAduId = i
             }
-            lastSeenAduId = i
         }
         return lastSeenAdu?.let { Pair(it, lastSeenAduId) }
     }
@@ -79,8 +80,11 @@ class AuthRepositoryImpl(
     }
 
     @Suppress("TooGenericExceptionCaught")
-    override suspend fun insertAdu(adu: ControlAdu): Boolean = withContext(Dispatchers.IO) {
+    override suspend fun insertAdu(adu: ControlAdu, state: AuthState?): Boolean = withContext(Dispatchers.IO) {
         try {
+            if (state != null) {
+                authStateConfig.writeState(state, adu)
+            }
             dddClientAdapter.createAduToSend().use { out ->
                 out.write(adu.toBytes())
             }

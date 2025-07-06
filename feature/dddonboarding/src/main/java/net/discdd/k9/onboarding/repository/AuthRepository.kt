@@ -6,21 +6,9 @@ interface AuthRepository {
     enum class AuthState {
         LOGGED_IN,
         PENDING,
-        LOGGED_OUT,
         ERROR,
+        LOGGED_OUT,
         UNKNOWN,
-        ;
-
-        companion object {
-            fun fromString(state: String): AuthState {
-                return try {
-                    AuthState.valueOf(state)
-                } catch (ignore: IllegalArgumentException) {
-                    // If the state is not recognized, return UNKNOWN
-                    UNKNOWN
-                }
-            }
-        }
     }
 
     interface AuthRepositoryListener {
@@ -33,5 +21,5 @@ interface AuthRepository {
 
     suspend fun logout()
     suspend fun getId(): String?
-    suspend fun insertAdu(adu: ControlAdu): Boolean
+    suspend fun insertAdu(adu: ControlAdu, state: AuthState?): Boolean
 }

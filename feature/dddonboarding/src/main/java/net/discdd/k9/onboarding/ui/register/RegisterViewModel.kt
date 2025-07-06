@@ -90,6 +90,7 @@ class RegisterViewModel(
                         Pair("password", password),
                     ),
                 ),
+                AuthState.PENDING,
             )
             checkAuthState()
         }
