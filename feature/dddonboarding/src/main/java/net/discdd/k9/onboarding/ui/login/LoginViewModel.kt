@@ -33,6 +33,8 @@ class LoginViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(initialState)
     val state: StateFlow<State> = _state.asStateFlow()
+    private val _lastError = MutableStateFlow<String?>(null)
+    val lastError: StateFlow<String?> = _lastError.asStateFlow()
     private val _effectFlow = MutableSharedFlow<Effect>(replay = 1)
     val effectFlow: SharedFlow<Effect> = _effectFlow.asSharedFlow()
 
@@ -51,9 +53,24 @@ class LoginViewModel(
             Log.d("LoginViewModel", "state " + state)
             navigatePending()
         } else if (state == AuthState.LOGGED_IN && adu != null && adu is ControlAdu.EmailAck) {
+            _lastError.value = null
             createAccount(adu)
-        } else if (state == AuthState.LOGGED_OUT) {
+        } else if (state == AuthState.ERROR) {
+            _lastError.value = adu?.let {
+                when (it) {
+                    is ControlAdu.EmailAck -> it.message()
+                    else -> it.toString()
+                }
+            } ?: "Unknown error"
             navigateLogin()
+        } else {
+            navigateLogin()
+        }
+    }
+
+    fun clearLastError() {
+        viewModelScope.launch {
+            authRepository.logout()
         }
     }
 
@@ -116,15 +133,14 @@ class LoginViewModel(
     }
 
     private fun login(email: String, password: String) {
+        val loginAdu = ControlAdu.LoginControlAdu(
+            mapOf(
+                Pair("email", email),
+                Pair("password", password),
+            ),
+        )
         viewModelScope.launch {
-            authRepository.insertAdu(
-                ControlAdu.LoginControlAdu(
-                    mapOf(
-                        Pair("email", email),
-                        Pair("password", password),
-                    ),
-                ),
-            )
+            authRepository.insertAdu(loginAdu, AuthState.PENDING)
             checkAuthState()
         }
     }

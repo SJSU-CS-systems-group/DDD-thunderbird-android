@@ -14,11 +14,11 @@ class AuthStateConfig(
     private val configFile: File = dddDir.resolve("auth.state"),
 ) {
     @Throws(IOException::class)
-    fun writeState(state: AuthState, adu: ControlAdu? = null) {
+    fun writeState(state: AuthState, adu: ControlAdu) {
         if (!dddDir.exists()) dddDir.mkdirs()
         FileOutputStream(configFile).use { os ->
             os.write("${state.name}\n".toByteArray())
-            os.write(adu?.toBytes() ?: byteArrayOf())
+            os.write(adu.toBytes() ?: byteArrayOf())
         }
     }
 

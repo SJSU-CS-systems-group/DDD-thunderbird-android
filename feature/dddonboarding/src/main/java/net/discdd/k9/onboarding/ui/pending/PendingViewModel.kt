@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.discdd.app.k9.common.ControlAdu
@@ -21,6 +23,15 @@ class PendingViewModel(
     private val _effectFlow = MutableSharedFlow<Effect>(replay = 1)
     val effectFlow: SharedFlow<Effect> = _effectFlow.asSharedFlow()
 
+    private val _lastAdu = MutableStateFlow<ControlAdu?>(null)
+    val lastAdu: SharedFlow<ControlAdu?> = _lastAdu.asStateFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            monitorAuthState()
+        }
+    }
+
     private fun refreshScreen() {
         viewModelScope.launch {
             // only recheck login if we aren't pending
@@ -31,6 +42,7 @@ class PendingViewModel(
                     _effectFlow.emit(Effect.OnRedoLoginState)
                 }
             }
+            _lastAdu.value = authRepository.getState().second
         }
     }
 
@@ -39,7 +51,7 @@ class PendingViewModel(
             withContext(Dispatchers.IO) {
                 Log.d("k9", "whoAmI called")
             }
-            authRepository.insertAdu(ControlAdu.WhoAmIControlAdu())
+            authRepository.insertAdu(ControlAdu.WhoAmIControlAdu(), null)
         }
     }
 
@@ -47,7 +59,8 @@ class PendingViewModel(
         refreshScreen()
     }
 
-    fun monitorAuthState() {
+    suspend fun monitorAuthState() {
+        _lastAdu.value = authRepository.getState().second
         authRepository.authRepositoryListener = this
     }
 
