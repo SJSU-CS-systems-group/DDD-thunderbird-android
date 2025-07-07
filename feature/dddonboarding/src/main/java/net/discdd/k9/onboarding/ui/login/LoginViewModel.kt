@@ -8,6 +8,8 @@ import app.k9mail.feature.account.common.domain.entity.AccountState
 import app.k9mail.feature.account.setup.AccountSetupExternalContract.AccountCreator.AccountCreatorResult
 import app.k9mail.feature.account.setup.domain.entity.AccountUuid
 import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
+import com.fsck.k9.Account
+import com.fsck.k9.Preferences
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +52,7 @@ class LoginViewModel(
     private suspend fun checkAuthState() {
         val (state, adu) = authRepository.getState()
         if (state == AuthState.PENDING) {
-            Log.d("LoginViewModel", "state " + state)
+            Log.d("LoginViewModel", "state $state")
             navigatePending()
         } else if (state == AuthState.LOGGED_IN && adu != null && adu is ControlAdu.EmailAck) {
             _lastError.value = null
@@ -98,7 +100,15 @@ class LoginViewModel(
 
         viewModelScope.launch {
             when (val result = createAccount.execute(accountState)) {
-                is AccountCreatorResult.Success -> showSuccess(AccountUuid(result.accountUuid))
+                is AccountCreatorResult.Success -> {
+                    // turn on pushes to the inbox from DDD Client
+                    val preferences = Preferences.getPreferences()
+                    preferences.getAccount(result.accountUuid)?.apply {
+                        this.folderPushMode = Account.FolderMode.ALL
+                        preferences.saveAccount(this)
+                    }
+                    showSuccess(AccountUuid(result.accountUuid))
+                }
                 is AccountCreatorResult.Error -> showError(Error(result.message))
             }
         }
