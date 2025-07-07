@@ -37,10 +37,14 @@ const val CONTROL_HEADER_PEEK_SIZE = ControlAdu.CONTROL_HEADER.length + 4
 
 @Suppress("UnusedParameter", "UnusedPrivateProperty", "TooManyFunctions")
 class DddBackend(
-    val context: Context,
-    accountName: String,
+    val factory: DDDFactory,
+    val uuid: String,
     private val backendStorage: BackendStorage,
 ) : Backend {
+    interface DDDFactory {
+        val context: Context
+        fun changeEmailAddress(uuid: String, email: String)
+    }
     private lateinit var dddAdapter: DDDClientAdapter
     private val messageStoreInfo by lazy { readMessageStoreInfo() }
 
@@ -60,7 +64,7 @@ class DddBackend(
     init {
         CoroutineScope(Dispatchers.Main).launch {
             dddAdapter = DDDClientAdapter(
-                context,
+                factory.context,
             ) {
                 logger.i("Notified of new ADU addition")
                 val folderServerId = backendStorage.getFolderServerIds().firstOrNull()
@@ -73,7 +77,7 @@ class DddBackend(
     }
 
     override fun removeBackend() {
-        val dddDir: File = context.filesDir.resolve("ddd")
+        val dddDir: File = factory.context.filesDir.resolve("ddd")
         val configFile: File = dddDir.resolve("auth.state")
         configFile.delete()
     }
@@ -136,6 +140,14 @@ class DddBackend(
                     try {
                         val controlAdu = ControlAdu.fromBytes(peekableInputStream.readAllBytes())
                         logger.w("Received control ADU: $controlAdu")
+                        if (controlAdu is ControlAdu.EmailAck) {
+                            if (controlAdu.success()) {
+                                logger.i("Received EmailAck email ${controlAdu.email()} changing address")
+                                factory.changeEmailAddress(uuid, controlAdu.email())
+                            }
+                        } else {
+                            logger.w("Received unexpected control ADU type: ${controlAdu.javaClass.simpleName}")
+                        }
                     } catch (e: Exception) {
                         logger.e(e, "Failed to parse control ADU for ID $aduId")
                     }
