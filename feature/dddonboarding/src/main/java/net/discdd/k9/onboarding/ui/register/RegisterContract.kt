@@ -50,5 +50,6 @@ interface RegisterContract {
     sealed interface Effect {
         data object OnPendingState : Effect
         data object OnLoggedInState : Effect
+        data object OnErrorState : Effect
     }
 }

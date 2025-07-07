@@ -82,7 +82,7 @@ class RegisterViewModel(
         password: String,
     ) {
         viewModelScope.launch {
-            authRepository.insertAdu(
+            if (!authRepository.insertAdu(
                 ControlAdu.RegisterControlAdu(
                     mapOf(
                         Pair("prefix", prefix),
@@ -91,7 +91,10 @@ class RegisterViewModel(
                     ),
                 ),
                 AuthState.PENDING,
-            )
+            )) {
+                _effectFlow.emit(Effect.OnErrorState)
+                return@launch
+            }
             checkAuthState()
         }
     }
