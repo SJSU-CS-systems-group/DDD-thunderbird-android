@@ -17,6 +17,6 @@ dependencies {
     implementation(project(":feature:account:setup"))
     implementation(project(":legacy:core"))
     implementation(libs.client.adapter)
-    implementation("net.discdd.app:k9-common:0.0.1-SNAPSHOT")
+    implementation("net.discdd.app:k9-common:0.1")
     implementation(libs.androidx.material3.android)
 }
