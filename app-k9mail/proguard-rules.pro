@@ -62,3 +62,5 @@
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 
 -keep,allowshrinking class com.tokenautocomplete.TokenCompleteTextView
+-keep class net.discdd.** { *; }
+
