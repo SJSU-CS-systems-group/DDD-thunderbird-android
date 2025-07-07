@@ -39,7 +39,7 @@ class AuthRepositoryImpl(
             } else {
                 authStateConfig.writeState(AuthState.ERROR, adu as ControlAdu)
             }
-            deleteUptoAduId(id)
+            dddClientAdapter.deleteReceivedAdusUpTo(id)
         }
         authStateConfig.readState()
     }
@@ -48,25 +48,33 @@ class AuthRepositoryImpl(
         authStateConfig.deleteState()
     }
 
+    /**
+     * this function will return the last seen EmailAck and the ID of the ADU to delete
+     * to. THIS MAY BE LESS THAN THE LAST ACK ADU RECEIVED. If there are messages in
+     * between, we don't want to delete the messages.
+     */
     @Suppress("TooGenericExceptionCaught")
     private fun getAckAdu(): Pair<ControlAdu.EmailAck, Long>? {
         var lastSeenAdu: ControlAdu.EmailAck? = null
         var lastSeenAduId = -1L
+        var messageSeen = false
         for (i in dddClientAdapter.incomingAduIds ?: emptyList()) {
             dddClientAdapter.receiveAdu(i)?.readAllBytes().apply {
                 try {
-                    lastSeenAdu = ControlAdu.fromBytes(this) as ControlAdu.EmailAck
+                    if (ControlAdu.isControlAdu(this)) {
+                        lastSeenAdu = ControlAdu.fromBytes(this) as ControlAdu.EmailAck
+                    } else {
+                        messageSeen = true
+                    }
                 } catch (e: Exception) {
                     Log.w("dddEmail", "Failed to read EmailAck for ID $i", e)
                 }
-                lastSeenAduId = i
+                if (!messageSeen) {
+                    lastSeenAduId = i
+                }
             }
         }
         return lastSeenAdu?.let { Pair(it, lastSeenAduId) }
-    }
-
-    private fun deleteUptoAduId(aduId: Long) {
-        dddClientAdapter.deleteReceivedAdusUpTo(aduId)
     }
 
     override suspend fun getId(): String? = withContext(Dispatchers.IO) {

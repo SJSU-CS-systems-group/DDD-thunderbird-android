@@ -13,6 +13,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.moshi)
     implementation(libs.client.adapter)
+    implementation("net.discdd.app:k9-common:0.1")
     implementation(libs.androidx.lifecycle.process)
     ksp(libs.moshi.kotlin.codegen)
 

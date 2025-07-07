@@ -34,7 +34,6 @@ fun PendingScreen(
         }
     }
 
-    Log.d("DDDOnboarding", "In pending")
     PendingContent(
         modifier = modifier,
     )
