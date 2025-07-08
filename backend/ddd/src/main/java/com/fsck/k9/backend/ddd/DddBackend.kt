@@ -137,20 +137,7 @@ class DddBackend(
             for (aduId in mailIdsToSync) {
                 val peekableInputStream = BufferedInputStream(dddAdapter.receiveAdu(aduId))
                 if (isControlAdu(peekableInputStream)) {
-                    try {
-                        val controlAdu = ControlAdu.fromBytes(peekableInputStream.readAllBytes())
-                        logger.w("Received control ADU: $controlAdu")
-                        if (controlAdu is ControlAdu.EmailAck) {
-                            if (controlAdu.success()) {
-                                logger.i("Received EmailAck email ${controlAdu.email()} changing address")
-                                factory.changeEmailAddress(uuid, controlAdu.email())
-                            }
-                        } else {
-                            logger.w("Received unexpected control ADU type: ${controlAdu.javaClass.simpleName}")
-                        }
-                    } catch (e: Exception) {
-                        logger.e(e, "Failed to parse control ADU for ID $aduId")
-                    }
+                    processControlAdu(peekableInputStream, aduId)
                 } else {
                     val aduIdString = aduId.toString()
                     val message = loadMessage(aduIdString, peekableInputStream)
@@ -168,6 +155,22 @@ class DddBackend(
         } catch (e: Exception) {
             logger.e(e, "Unable to complete Inbox folder sync from the bundle client")
             listener.syncFailed(folderServerId, "Unable to complete Inbox folder sync from the bundle client", e)
+        }
+    }
+
+    private fun processControlAdu(peekableInputStream: BufferedInputStream) {
+        val controlAdu = ControlAdu.fromBytes(peekableInputStream.readAllBytes())
+        logger.w("Received control ADU: $controlAdu")
+        // there is not much we can do with the control ADU, but we can handle changing
+        // the email address. this may happen if we get multiple different outstanding
+        // logins or register ADUs.
+        if (controlAdu is ControlAdu.EmailAck) {
+            if (controlAdu.success()) {
+                logger.i("Received EmailAck email ${controlAdu.email()} changing address")
+                factory.changeEmailAddress(uuid, controlAdu.email())
+            }
+        } else {
+            logger.w("Received unexpected control ADU type: ${controlAdu.javaClass.simpleName}")
         }
     }
 

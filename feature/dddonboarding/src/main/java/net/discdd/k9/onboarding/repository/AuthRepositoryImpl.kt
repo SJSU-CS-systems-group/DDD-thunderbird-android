@@ -1,7 +1,6 @@
 package net.discdd.k9.onboarding.repository
 
 import android.content.Context
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.discdd.adapter.DDDClientAdapter
@@ -58,16 +57,12 @@ class AuthRepositoryImpl(
         var lastSeenAdu: ControlAdu.EmailAck? = null
         var lastSeenAduId = -1L
         var messageSeen = false
-        for (i in dddClientAdapter.incomingAduIds ?: emptyList()) {
+        dddClientAdapter.incomingAduIds?.forEach { i ->
             dddClientAdapter.receiveAdu(i)?.readAllBytes().apply {
-                try {
-                    if (ControlAdu.isControlAdu(this)) {
-                        lastSeenAdu = ControlAdu.fromBytes(this) as ControlAdu.EmailAck
-                    } else {
-                        messageSeen = true
-                    }
-                } catch (e: Exception) {
-                    Log.w("dddEmail", "Failed to read EmailAck for ID $i", e)
+                if (ControlAdu.isControlAdu(this)) {
+                    lastSeenAdu = ControlAdu.fromBytes(this) as ControlAdu.EmailAck
+                } else {
+                    messageSeen = true
                 }
                 if (!messageSeen) {
                     lastSeenAduId = i
