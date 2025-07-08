@@ -32,7 +32,7 @@ import net.discdd.app.k9.common.ControlAdu
 import okio.buffer
 import okio.source
 
-// we CONTROL_HEADER sie plus we need 1 byte for the \n and 3 just in case :)
+// CONTROL_HEADER size plus we need 1 byte for the \n and 3 just in case :)
 const val CONTROL_HEADER_PEEK_SIZE = ControlAdu.CONTROL_HEADER.length + 4
 
 @Suppress("UnusedParameter", "UnusedPrivateProperty", "TooManyFunctions")
