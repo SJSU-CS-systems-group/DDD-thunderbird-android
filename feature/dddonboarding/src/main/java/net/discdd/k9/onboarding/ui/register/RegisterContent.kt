@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import app.k9mail.core.ui.compose.designsystem.atom.Surface
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonFilledTonal
 import app.k9mail.core.ui.compose.designsystem.atom.button.ButtonText
@@ -23,6 +24,7 @@ import app.k9mail.core.ui.compose.designsystem.template.LazyColumnWithHeaderFoot
 import app.k9mail.core.ui.compose.designsystem.template.ResponsiveContent
 import app.k9mail.core.ui.compose.theme2.MainTheme
 import com.example.dddonboarding.R
+import net.discdd.k9.onboarding.navigation.navigateToLogin
 import net.discdd.k9.onboarding.ui.register.RegisterContract.Event
 import net.discdd.k9.onboarding.ui.register.RegisterContract.State
 
@@ -30,7 +32,7 @@ import net.discdd.k9.onboarding.ui.register.RegisterContract.State
 internal fun RegisterContent(
     state: State,
     onEvent: (Event) -> Unit,
-    onLoginClick: () -> Unit,
+    navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -53,7 +55,7 @@ internal fun RegisterContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = MainTheme.spacings.quadruple),
-                        onLoginClick = onLoginClick,
+                        onLoginClick = { navController.navigateToLogin() },
                     )
                 },
                 verticalArrangement = Arrangement.SpaceEvenly,

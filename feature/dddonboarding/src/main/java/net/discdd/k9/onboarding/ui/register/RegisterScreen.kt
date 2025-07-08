@@ -4,11 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import net.discdd.k9.onboarding.navigation.navigateToLogin
 import net.discdd.k9.onboarding.ui.register.RegisterContract.Effect
 
 @Composable
 fun RegisterScreen(
-    onLoginClick: () -> Unit,
+    navController: NavHostController,
     viewModel: RegisterViewModel,
     onPendingState: () -> Unit,
     modifier: Modifier = Modifier,
@@ -20,6 +22,7 @@ fun RegisterScreen(
             when (effect) {
                 Effect.OnPendingState -> onPendingState()
                 Effect.OnLoggedInState -> onPendingState()
+                Effect.OnErrorState -> navController.navigateToLogin()
             }
         }
     }
@@ -28,6 +31,6 @@ fun RegisterScreen(
         state = state.value,
         onEvent = { viewModel.event(it) },
         modifier = modifier,
-        onLoginClick = onLoginClick,
+        navController = navController,
     )
 }

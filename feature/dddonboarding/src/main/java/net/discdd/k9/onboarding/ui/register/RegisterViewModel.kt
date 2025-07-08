@@ -82,16 +82,20 @@ class RegisterViewModel(
         password: String,
     ) {
         viewModelScope.launch {
-            authRepository.insertAdu(
-                ControlAdu.RegisterControlAdu(
-                    mapOf(
-                        Pair("prefix", prefix),
-                        Pair("suffix", suffix),
-                        Pair("password", password),
+            if (!authRepository.insertAdu(
+                    ControlAdu.RegisterControlAdu(
+                        mapOf(
+                            Pair("prefix", prefix),
+                            Pair("suffix", suffix),
+                            Pair("password", password),
+                        ),
                     ),
-                ),
-                AuthState.PENDING,
-            )
+                    AuthState.PENDING,
+                )
+            ) {
+                _effectFlow.emit(Effect.OnErrorState)
+                return@launch
+            }
             checkAuthState()
         }
     }

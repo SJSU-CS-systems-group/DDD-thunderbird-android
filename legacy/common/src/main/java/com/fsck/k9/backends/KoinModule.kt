@@ -32,6 +32,6 @@ val backendsModule = module {
     single<SystemAlarmManager> { AndroidAlarmManager(context = get(), alarmManager = get()) }
     single<IdleRefreshManager> { BackendIdleRefreshManager(alarmManager = get()) }
     single { Pop3BackendFactory(get(), get()) }
-    single { DddBackendFactory(context = get(), get()) }
+    single { DddBackendFactory(context = get(), get(), get()) }
     single<OAuth2TokenProviderFactory> { RealOAuth2TokenProviderFactory(context = get()) }
 }

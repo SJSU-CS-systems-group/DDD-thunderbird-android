@@ -1,7 +1,6 @@
 package com.fsck.k9.backend.ddd
 
 import android.content.Context
-import android.util.Log
 import com.fsck.k9.backend.api.Backend
 import com.fsck.k9.backend.api.BackendFolder
 import com.fsck.k9.backend.api.BackendPusher
@@ -20,6 +19,7 @@ import com.fsck.k9.mail.Part
 import com.fsck.k9.mail.internet.MimeMessage
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
+import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
@@ -28,15 +28,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.discdd.adapter.DDDClientAdapter
+import net.discdd.app.k9.common.ControlAdu
 import okio.buffer
 import okio.source
 
+// CONTROL_HEADER size plus we need 1 byte for the \n and 3 just in case :)
+const val CONTROL_HEADER_PEEK_SIZE = ControlAdu.CONTROL_HEADER.length + 4
+
 @Suppress("UnusedParameter", "UnusedPrivateProperty", "TooManyFunctions")
 class DddBackend(
-    val context: Context,
-    accountName: String,
+    val factory: DDDFactory,
+    val uuid: String,
     private val backendStorage: BackendStorage,
 ) : Backend {
+    interface DDDFactory {
+        val context: Context
+        fun changeEmailAddress(uuid: String, email: String)
+    }
     private lateinit var dddAdapter: DDDClientAdapter
     private val messageStoreInfo by lazy { readMessageStoreInfo() }
 
@@ -56,7 +64,7 @@ class DddBackend(
     init {
         CoroutineScope(Dispatchers.Main).launch {
             dddAdapter = DDDClientAdapter(
-                context,
+                factory.context,
             ) {
                 logger.i("Notified of new ADU addition")
                 val folderServerId = backendStorage.getFolderServerIds().firstOrNull()
@@ -69,7 +77,7 @@ class DddBackend(
     }
 
     override fun removeBackend() {
-        val dddDir: File = context.filesDir.resolve("ddd")
+        val dddDir: File = factory.context.filesDir.resolve("ddd")
         val configFile: File = dddDir.resolve("auth.state")
         configFile.delete()
     }
@@ -106,16 +114,8 @@ class DddBackend(
 
     @Throws(NullPointerException::class)
     @Override
-    private fun loadMessage(folderServerId: String, messageServerId: String): Message {
-        val aduId = messageServerId.toLong()
-
-        Log.d("loadMsg ", messageServerId)
-
-        val messageBytes: ByteArray = dddAdapter.receiveAdu(aduId).use { it.readAllBytes() }
-
-        val inputStream = messageBytes.inputStream()
-        val mimeMessage = MimeMessage.parseMimeMessage(inputStream, false).apply { uid = messageServerId }
-
+    private fun loadMessage(aduId: String, messageInputStream: InputStream): Message {
+        val mimeMessage = MimeMessage.parseMimeMessage(messageInputStream, false).apply { uid = aduId }
         return mimeMessage
     }
 
@@ -132,18 +132,20 @@ class DddBackend(
         val backendFolder = backendStorage.getFolder(folderServerId)
 
         try {
-            // TO-DO:
-            // we might need to delete mails one at a time, after calling the saveMessage.
-            // This implementation might process the same message multiple times
             val mailIdsToSync = dddAdapter.incomingAduIds
             var lastMsgServerIdProcessed = 0L
-            for (messageServerId in mailIdsToSync) {
-                val message = loadMessage(folderServerId, messageServerId.toString())
-                backendFolder.saveMessage(message, MessageDownloadState.FULL)
-                listener.syncNewMessage(folderServerId, messageServerId.toString(), isOldMessage = false)
-                val msId = messageServerId
-                if (lastMsgServerIdProcessed < msId) {
-                    lastMsgServerIdProcessed = msId
+            for (aduId in mailIdsToSync) {
+                val peekableInputStream = BufferedInputStream(dddAdapter.receiveAdu(aduId))
+                if (isControlAdu(peekableInputStream)) {
+                    processControlAdu(peekableInputStream)
+                } else {
+                    val aduIdString = aduId.toString()
+                    val message = loadMessage(aduIdString, peekableInputStream)
+                    backendFolder.saveMessage(message, MessageDownloadState.FULL)
+                    listener.syncNewMessage(folderServerId, aduIdString, isOldMessage = false)
+                }
+                if (lastMsgServerIdProcessed < aduId) {
+                    lastMsgServerIdProcessed = aduId
                 }
             }
 
@@ -154,6 +156,30 @@ class DddBackend(
             logger.e(e, "Unable to complete Inbox folder sync from the bundle client")
             listener.syncFailed(folderServerId, "Unable to complete Inbox folder sync from the bundle client", e)
         }
+    }
+
+    private fun processControlAdu(peekableInputStream: BufferedInputStream) {
+        val controlAdu = ControlAdu.fromBytes(peekableInputStream.readAllBytes())
+        logger.w("Received control ADU: $controlAdu")
+        // there is not much we can do with the control ADU, but we can handle changing
+        // the email address. this may happen if we get multiple different outstanding
+        // logins or register ADUs.
+        if (controlAdu is ControlAdu.EmailAck) {
+            if (controlAdu.success()) {
+                logger.i("Received EmailAck email ${controlAdu.email()} changing address")
+                factory.changeEmailAddress(uuid, controlAdu.email())
+            }
+        } else {
+            logger.w("Received unexpected control ADU type: ${controlAdu.javaClass.simpleName}")
+        }
+    }
+
+    private fun isControlAdu(peekableInputStream: BufferedInputStream): Boolean {
+        peekableInputStream.mark(CONTROL_HEADER_PEEK_SIZE)
+        val header = ByteArray(CONTROL_HEADER_PEEK_SIZE)
+        peekableInputStream.read(header)
+        peekableInputStream.reset()
+        return ControlAdu.isControlAdu(header)
     }
 
     override fun downloadMessage(syncConfig: SyncConfig, folderServerId: String, messageServerId: String) {

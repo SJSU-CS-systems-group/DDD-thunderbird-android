@@ -1,7 +1,6 @@
 package net.discdd.k9.onboarding.repository
 
 import android.content.Context
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.discdd.adapter.DDDClientAdapter
@@ -39,7 +38,7 @@ class AuthRepositoryImpl(
             } else {
                 authStateConfig.writeState(AuthState.ERROR, adu as ControlAdu)
             }
-            deleteUptoAduId(id)
+            dddClientAdapter.deleteReceivedAdusUpTo(id)
         }
         authStateConfig.readState()
     }
@@ -48,25 +47,29 @@ class AuthRepositoryImpl(
         authStateConfig.deleteState()
     }
 
-    @Suppress("TooGenericExceptionCaught")
+    /**
+     * this function will return the last seen EmailAck and the ID of the ADU to delete
+     * to. THIS MAY BE LESS THAN THE LAST ACK ADU RECEIVED. If there are messages in
+     * between, we don't want to delete the messages.
+     */
+    @Suppress("TooGenericExceptionCaught", "[NestedBlockDepth]")
     private fun getAckAdu(): Pair<ControlAdu.EmailAck, Long>? {
         var lastSeenAdu: ControlAdu.EmailAck? = null
         var lastSeenAduId = -1L
-        for (i in dddClientAdapter.incomingAduIds ?: emptyList()) {
+        var messageSeen = false
+        dddClientAdapter.incomingAduIds?.forEach { i ->
             dddClientAdapter.receiveAdu(i)?.readAllBytes().apply {
-                try {
+                if (ControlAdu.isControlAdu(this)) {
                     lastSeenAdu = ControlAdu.fromBytes(this) as ControlAdu.EmailAck
-                } catch (e: Exception) {
-                    Log.w("dddEmail", "Failed to read EmailAck for ID $i", e)
+                } else {
+                    messageSeen = true
                 }
-                lastSeenAduId = i
+                if (!messageSeen) {
+                    lastSeenAduId = i
+                }
             }
         }
         return lastSeenAdu?.let { Pair(it, lastSeenAduId) }
-    }
-
-    private fun deleteUptoAduId(aduId: Long) {
-        dddClientAdapter.deleteReceivedAdusUpTo(aduId)
     }
 
     override suspend fun getId(): String? = withContext(Dispatchers.IO) {

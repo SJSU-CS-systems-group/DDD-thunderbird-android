@@ -21,7 +21,7 @@ private fun NavController.navigateToRegister() {
     navigate(NESTED_NAVIGATION_ROUTE_REGISTER)
 }
 
-private fun NavController.navigateToLogin() {
+fun NavController.navigateToLogin() {
     navigate(NESTED_NAVIGATION_ROUTE_LOGIN)
 }
 
@@ -51,7 +51,7 @@ fun OnboardingNavHost(
         }
         composable(route = NESTED_NAVIGATION_ROUTE_REGISTER) {
             RegisterScreen(
-                onLoginClick = { navController.navigateToLogin() },
+                navController = navController,
                 viewModel = koinViewModel<RegisterViewModel>(),
                 onPendingState = { navController.navigateToPending() },
             )
