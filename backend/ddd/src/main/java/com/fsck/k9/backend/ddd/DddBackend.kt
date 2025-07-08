@@ -137,7 +137,7 @@ class DddBackend(
             for (aduId in mailIdsToSync) {
                 val peekableInputStream = BufferedInputStream(dddAdapter.receiveAdu(aduId))
                 if (isControlAdu(peekableInputStream)) {
-                    processControlAdu(peekableInputStream, aduId)
+                    processControlAdu(peekableInputStream)
                 } else {
                     val aduIdString = aduId.toString()
                     val message = loadMessage(aduIdString, peekableInputStream)
