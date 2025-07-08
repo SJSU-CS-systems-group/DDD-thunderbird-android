@@ -53,7 +53,7 @@ class AuthRepositoryImpl(
      * to. THIS MAY BE LESS THAN THE LAST ACK ADU RECEIVED. If there are messages in
      * between, we don't want to delete the messages.
      */
-    @Suppress("TooGenericExceptionCaught")
+    @Suppress("TooGenericExceptionCaught", "[NestedBlockDepth]")
     private fun getAckAdu(): Pair<ControlAdu.EmailAck, Long>? {
         var lastSeenAdu: ControlAdu.EmailAck? = null
         var lastSeenAduId = -1L
