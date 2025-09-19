@@ -40,6 +40,7 @@ public class AttachmentPresenter {
     private static final int LOADER_ID_MASK = 1 << 6;
     private static final int MAX_TOTAL_LOADERS = LOADER_ID_MASK - 1;
     private static final int REQUEST_CODE_ATTACHMENT_URI = 1;
+    private static final long MAX_MESSAGE_SIZE = 20 * 1024 * 1024L; // 20MB
 
 
     // injected state
@@ -283,6 +284,35 @@ public class AttachmentPresenter {
         return LOADER_ID_MASK | nextLoaderId++;
     }
 
+    private boolean wouldExceedSizeLimit(Attachment newAttachment) {
+        long currentSize = getCurrentMessageSize();
+        long newAttachmentSize = newAttachment.size != null ? newAttachment.size : 0;
+        return (currentSize + newAttachmentSize) > MAX_MESSAGE_SIZE;
+    }
+
+    private long getCurrentMessageSize() {
+        long totalSize = 0;
+        
+        // Add existing attachment sizes
+        for (Attachment attachment : attachments.values()) {
+            if (attachment.size != null) {
+                totalSize += attachment.size;
+            }
+        }
+        
+        // Add inline attachment sizes  
+        for (InlineAttachment inlineAttachment : inlineAttachments.values()) {
+            if (inlineAttachment.getAttachment().getSize() != null) {
+                totalSize += inlineAttachment.getAttachment().getSize();
+            }
+        }
+        
+        // TODO: Add estimated text content size if needed
+        // This could be estimated from message text length
+        
+        return totalSize;
+    }
+
     private LoaderManager.LoaderCallbacks<Attachment> mAttachmentInfoLoaderCallback =
             new LoaderManager.LoaderCallbacks<Attachment>() {
                 @Override
@@ -301,6 +331,16 @@ public class AttachmentPresenter {
                     }
 
                     if (attachment.state == LoadingState.METADATA) {
+                        // Check if adding this attachment would exceed size limit
+                        if (wouldExceedSizeLimit(attachment)) {
+                            // Reject the attachment - remove it and show error
+                            attachments.remove(attachment.uri);
+                            attachmentMvpView.removeAttachmentView(attachment);
+                            attachmentMvpView.showAttachmentSizeLimitExceeded();
+                            return;
+                        }
+                        
+                        // Existing code - only runs if size check passes
                         attachmentMvpView.updateAttachmentView(attachment);
                         attachments.put(attachment.uri, attachment);
                         initAttachmentContentLoader(attachment);
@@ -474,6 +514,7 @@ public class AttachmentPresenter {
 
         void showMissingAttachmentsPartialMessageWarning();
         void showMissingAttachmentsPartialMessageForwardWarning();
+        void showAttachmentSizeLimitExceeded();
     }
 
     public interface AttachmentsChangedListener {
