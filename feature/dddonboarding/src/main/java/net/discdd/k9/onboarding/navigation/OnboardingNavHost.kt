@@ -29,7 +29,6 @@ fun NavController.navigateToLogin() {
 }
 
 fun NavController.navigateToErrorState() {
-    Log.d("Error", "Client needs to be installed")
     navigate(NESTED_NAVIGATION_ROUTE_ERROR)
 }
 private fun NavController.navigateToPending() {
