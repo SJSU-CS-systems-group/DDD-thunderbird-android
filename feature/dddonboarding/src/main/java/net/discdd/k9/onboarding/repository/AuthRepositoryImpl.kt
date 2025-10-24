@@ -41,7 +41,6 @@ class AuthRepositoryImpl(
         val pm = context.packageManager
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                // ✅ use the nested flags type
                 pm.getPackageInfo(
                     BUNDLE_CLIENT_PACKAGE,
                     PackageManager.PackageInfoFlags.of(0),
