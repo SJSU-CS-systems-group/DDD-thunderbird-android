@@ -42,7 +42,7 @@ interface LoginContract {
     sealed interface Effect {
         data object OnPendingState : Effect
 
-        data object onErrorState : Effect
+        data object OnErrorState : Effect
         data class OnLoggedInState(val accountUuid: AccountUuid) : Effect
         data class OnError(val error: kotlin.Error) : LoginContract.Effect
     }

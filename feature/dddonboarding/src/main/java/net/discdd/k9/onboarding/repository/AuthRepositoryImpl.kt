@@ -44,7 +44,7 @@ class AuthRepositoryImpl(
                 // ✅ use the nested flags type
                 pm.getPackageInfo(
                     BUNDLE_CLIENT_PACKAGE,
-                    PackageManager.PackageInfoFlags.of(0)
+                    PackageManager.PackageInfoFlags.of(0),
                 )
             } else {
                 @Suppress("DEPRECATION")
@@ -55,7 +55,6 @@ class AuthRepositoryImpl(
             false
         }
     }
-
 
     override suspend fun getState(): Pair<AuthState, ControlAdu?> = withContext(Dispatchers.IO) {
         getAckAdu()?.run {

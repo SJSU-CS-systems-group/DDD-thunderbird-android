@@ -31,7 +31,7 @@ fun LoginScreen(
             Log.d("k9", "in effect: $effect")
             when (effect) {
                 Effect.OnPendingState -> onPendingState()
-                Effect.onErrorState -> onErrorState();
+                Effect.OnErrorState -> onErrorState()
                 is Effect.OnLoggedInState -> onFinish(effect.accountUuid.value)
                 is Effect.OnError -> {
                     showToast(context, effect.error.message)

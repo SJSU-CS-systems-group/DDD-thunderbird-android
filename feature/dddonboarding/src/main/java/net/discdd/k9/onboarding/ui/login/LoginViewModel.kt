@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.discdd.adapter.DDDClientAdapter
 import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
@@ -164,7 +163,7 @@ class LoginViewModel(
         Log.d("k9", "client error")
         viewModelScope.coroutineContext.cancelChildren()
         viewModelScope.launch {
-            _effectFlow.emit(Effect.onErrorState)
+            _effectFlow.emit(Effect.OnErrorState)
         }
     }
     private fun navigatePending() {

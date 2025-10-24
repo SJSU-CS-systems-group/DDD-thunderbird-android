@@ -6,11 +6,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import net.discdd.k9.onboarding.ui.error.ErrorScreen
 import net.discdd.k9.onboarding.ui.login.LoginScreen
 import net.discdd.k9.onboarding.ui.login.LoginViewModel
 import net.discdd.k9.onboarding.ui.pending.PendingScreen
 import net.discdd.k9.onboarding.ui.register.RegisterScreen
-import net.discdd.k9.onboarding.ui.error.ErrorScreen
 import net.discdd.k9.onboarding.ui.register.RegisterViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -48,7 +48,7 @@ fun OnboardingNavHost(
     ) {
         composable(route = NESTED_NAVIGATION_ROUTE_ERROR) {
             ErrorScreen()
-    }
+        }
         composable(route = NESTED_NAVIGATION_ROUTE_LOGIN) {
             LoginScreen(
                 onRegisterClick = { navController.navigateToRegister() },
