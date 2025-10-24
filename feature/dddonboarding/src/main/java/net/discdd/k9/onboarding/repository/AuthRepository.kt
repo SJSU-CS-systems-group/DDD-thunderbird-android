@@ -17,6 +17,8 @@ interface AuthRepository {
 
     var authRepositoryListener: AuthRepositoryListener?
 
+    suspend fun checkClientStatus(): Boolean
+
     suspend fun getState(): Pair<AuthState, ControlAdu?>
 
     suspend fun logout()

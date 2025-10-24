@@ -15,6 +15,7 @@ fun LoginScreen(
     onRegisterClick: () -> Unit,
     viewModel: LoginViewModel,
     onPendingState: () -> Unit,
+    onErrorState: () -> Unit,
     onFinish: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -30,6 +31,7 @@ fun LoginScreen(
             Log.d("k9", "in effect: $effect")
             when (effect) {
                 Effect.OnPendingState -> onPendingState()
+                Effect.OnErrorState -> onErrorState()
                 is Effect.OnLoggedInState -> onFinish(effect.accountUuid.value)
                 is Effect.OnError -> {
                     showToast(context, effect.error.message)
