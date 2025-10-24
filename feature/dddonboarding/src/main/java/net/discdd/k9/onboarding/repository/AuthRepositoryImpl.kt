@@ -40,7 +40,7 @@ class AuthRepositoryImpl(
     private fun isBundleClientInstalled(context: Context): Boolean {
         val pm = context.packageManager
         return try {
-            if (Build.VERSION.SDK_INT >= 33) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 // ✅ use the nested flags type
                 pm.getPackageInfo(
                     BUNDLE_CLIENT_PACKAGE,
