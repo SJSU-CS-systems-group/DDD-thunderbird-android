@@ -12,9 +12,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ErrorScreen(modifier: Modifier = Modifier) {
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(modifier = modifier) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(32.dp),
             contentAlignment = Alignment.Center,
