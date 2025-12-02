@@ -34,7 +34,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun checkClientStatus(): Boolean {
-        return dddClientAdapter.getClientId() != null || isBundleClientInstalled(context)
+        return dddClientAdapter.getClientId() != null && isBundleClientInstalled(context)
     }
 
     private fun isBundleClientInstalled(context: Context): Boolean {
