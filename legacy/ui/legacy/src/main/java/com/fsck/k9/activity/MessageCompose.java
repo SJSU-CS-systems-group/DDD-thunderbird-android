@@ -1890,6 +1890,11 @@ public class MessageCompose extends K9Activity implements OnClickListener,
         }
 
         @Override
+        public void showAttachmentSizeLimitExceeded() {
+            Toast.makeText(MessageCompose.this, R.string.attachment_size_limit_exceeded, Toast.LENGTH_LONG).show();
+        }
+
+        @Override
         public void showMissingAttachmentsPartialMessageForwardWarning() {
             Toast.makeText(MessageCompose.this,
                     getString(R.string.message_compose_attachments_forward_toast), Toast.LENGTH_LONG).show();
