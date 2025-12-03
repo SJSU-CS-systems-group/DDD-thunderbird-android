@@ -50,6 +50,10 @@ class LoginViewModel(
     }
 
     private suspend fun checkAuthState() {
+        if (!(authRepository.checkClientStatus())) {
+            Log.d("checkAuthState", "Client Does Not Exist")
+            clientError()
+        }
         val (state, adu) = authRepository.getState()
         if (state == AuthState.PENDING) {
             Log.d("LoginViewModel", "state $state")
@@ -155,6 +159,13 @@ class LoginViewModel(
         }
     }
 
+    private fun clientError() {
+        Log.d("k9", "client error")
+        viewModelScope.coroutineContext.cancelChildren()
+        viewModelScope.launch {
+            _effectFlow.emit(Effect.OnErrorState)
+        }
+    }
     private fun navigatePending() {
         Log.d("k9", "navigate pending")
         viewModelScope.coroutineContext.cancelChildren()

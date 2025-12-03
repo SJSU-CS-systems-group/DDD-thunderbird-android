@@ -1,6 +1,8 @@
 package net.discdd.k9.onboarding.repository
 
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.discdd.adapter.DDDClientAdapter
@@ -8,6 +10,7 @@ import net.discdd.app.k9.common.ControlAdu
 import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.util.AuthStateConfig
 
+private const val BUNDLE_CLIENT_PACKAGE = "net.discdd.bundleclient"
 class AuthRepositoryImpl(
     private val authStateConfig: AuthStateConfig,
     private val context: Context,
@@ -28,6 +31,28 @@ class AuthRepositoryImpl(
         DDDClientAdapter(context, {
             authRepositoryListener?.onAuthStateChanged()
         })
+    }
+
+    override suspend fun checkClientStatus(): Boolean {
+        return dddClientAdapter.getClientId() != null && isBundleClientInstalled(context)
+    }
+
+    private fun isBundleClientInstalled(context: Context): Boolean {
+        val pm = context.packageManager
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                pm.getPackageInfo(
+                    BUNDLE_CLIENT_PACKAGE,
+                    PackageManager.PackageInfoFlags.of(0),
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                pm.getPackageInfo(BUNDLE_CLIENT_PACKAGE, 0)
+            }
+            true
+        } catch (_: PackageManager.NameNotFoundException) {
+            false
+        }
     }
 
     override suspend fun getState(): Pair<AuthState, ControlAdu?> = withContext(Dispatchers.IO) {
