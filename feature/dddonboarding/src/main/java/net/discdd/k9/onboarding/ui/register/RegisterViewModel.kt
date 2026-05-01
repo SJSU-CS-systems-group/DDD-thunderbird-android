@@ -3,6 +3,7 @@ package net.discdd.k9.onboarding.ui.register
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -17,7 +18,6 @@ import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.ui.register.RegisterContract.Effect
 import net.discdd.k9.onboarding.ui.register.RegisterContract.Event
 import net.discdd.k9.onboarding.ui.register.RegisterContract.State
-import java.util.Locale
 
 class RegisterViewModel(
     initialState: State = State(),

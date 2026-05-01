@@ -10,6 +10,7 @@ import app.k9mail.feature.account.setup.domain.entity.AccountUuid
 import app.k9mail.feature.account.setup.domain.usecase.CreateAccount
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
+import java.util.Locale
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,6 @@ import net.discdd.k9.onboarding.ui.login.LoginContract.Effect
 import net.discdd.k9.onboarding.ui.login.LoginContract.Event
 import net.discdd.k9.onboarding.ui.login.LoginContract.State
 import net.discdd.k9.onboarding.util.CreateAccountConstants
-import java.util.Locale
 
 @Suppress("TooManyFunctions")
 class LoginViewModel(
