@@ -17,6 +17,7 @@ import net.discdd.k9.onboarding.repository.AuthRepository.AuthState
 import net.discdd.k9.onboarding.ui.register.RegisterContract.Effect
 import net.discdd.k9.onboarding.ui.register.RegisterContract.Event
 import net.discdd.k9.onboarding.ui.register.RegisterContract.State
+import java.util.Locale
 
 class RegisterViewModel(
     initialState: State = State(),
@@ -88,6 +89,7 @@ class RegisterViewModel(
                             Pair("prefix", prefix),
                             Pair("suffix", suffix),
                             Pair("password", password),
+                            Pair("locale", Locale.getDefault().language),
                         ),
                     ),
                     AuthState.PENDING,

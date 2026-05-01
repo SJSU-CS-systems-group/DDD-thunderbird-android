@@ -26,6 +26,7 @@ import net.discdd.k9.onboarding.ui.login.LoginContract.Effect
 import net.discdd.k9.onboarding.ui.login.LoginContract.Event
 import net.discdd.k9.onboarding.ui.login.LoginContract.State
 import net.discdd.k9.onboarding.util.CreateAccountConstants
+import java.util.Locale
 
 @Suppress("TooManyFunctions")
 class LoginViewModel(
@@ -151,6 +152,7 @@ class LoginViewModel(
             mapOf(
                 Pair("email", email),
                 Pair("password", password),
+                Pair("locale", Locale.getDefault().language),
             ),
         )
         viewModelScope.launch {
