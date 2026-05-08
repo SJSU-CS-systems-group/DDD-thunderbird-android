@@ -3,6 +3,7 @@ package net.discdd.k9.onboarding.ui.register
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -88,6 +89,7 @@ class RegisterViewModel(
                             Pair("prefix", prefix),
                             Pair("suffix", suffix),
                             Pair("password", password),
+                            Pair("locale", Locale.getDefault().language),
                         ),
                     ),
                     AuthState.PENDING,
